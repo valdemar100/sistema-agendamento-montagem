@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Agendamento de Montagem de Móveis</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🪑 Sistema de Agendamento de Montagem</h1>
+            <p>Gestão completa de agendamentos de montagem de móveis</p>
+        </div>
+
+        <!-- Informações do usuário logado -->
+        <div class="user-info" style="display: none;"></div>
+
+        <!-- Navegação por Casos de Uso -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="cadastro">📝 Cadastrar-se</button>
+            <button class="tab-button" data-tab="login">🔐 Fazer Login</button>
+            <button class="tab-button" data-tab="endereco">🏠 Cadastrar Endereço</button>
+            <button class="tab-button" data-tab="solicitar">📅 Solicitar Montagem</button>
+            <button class="tab-button" data-tab="visualizar">👀 Visualizar Agendamentos</button>
+            <button class="tab-button" data-tab="montador">👷 Montador</button>
+            <button class="tab-button" data-tab="admin">⚙️ Administrador</button>
+        </div>
+
+        <!-- TAB: Cadastrar-se (Caso de Uso 1) -->
+        <div id="tab-cadastro" class="tab-content active">
+            <h2>📝 Cadastrar-se</h2>
+            <p style="margin-bottom: 20px; color: #666;">Crie sua conta para agendar montagens</p>
+            
+            <form id="form-cadastro">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="cadastro-nome">Nome Completo:</label>
+                        <input type="text" id="cadastro-nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cadastro-email">Email:</label>
+                        <input type="email" id="cadastro-email" required>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="cadastro-telefone">Telefone:</label>
+                        <input type="tel" id="cadastro-telefone" placeholder="11999999999">
+                    </div>
+                    <div class="form-group">
+                        <label for="cadastro-cpf">CPF:</label>
+                        <input type="text" id="cadastro-cpf" placeholder="12345678900">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cadastro-cep">CEP:</label>
+                    <input type="text" id="cadastro-cep" placeholder="01310100">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </form>
+            
+            <div id="cadastro-result" class="result-box"></div>
+        </div>
+
+        <!-- TAB: Fazer Login (Caso de Uso 2) -->
+        <div id="tab-login" class="tab-content">
+            <h2>🔐 Fazer Login</h2>
+            <p style="margin-bottom: 20px; color: #666;">Acesse sua conta</p>
+            
+            <form id="form-login">
+                <div class="form-group">
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+            
+            <div id="login-result" class="result-box"></div>
+        </div>
+
+        <!-- TAB: Cadastrar Endereço (Caso de Uso - Include) -->
+        <div id="tab-endereco" class="tab-content">
+            <h2>🏠 Cadastrar Endereço</h2>
+            <p style="margin-bottom: 20px; color: #666;">Informe o endereço onde será realizada a montagem</p>
+            
+            <div class="user-info" style="display: none;"></div>
+            
+            <form id="form-endereco">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="endereco-rua">Rua:</label>
+                        <input type="text" id="endereco-rua" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-numero">Número:</label>
+                        <input type="text" id="endereco-numero" required>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="endereco-bairro">Bairro:</label>
+                        <input type="text" id="endereco-bairro" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-cidade">Cidade:</label>
+                        <input type="text" id="endereco-cidade" required>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="endereco-complemento">Complemento:</label>
+                        <input type="text" id="endereco-complemento">
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-cep">CEP:</label>
+                        <input type="text" id="endereco-cep" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Cadastrar Endereço</button>
+            </form>
+            
+            <div id="endereco-result" class="result-box"></div>
+        </div>
+
+        <!-- TAB: Solicitar Montagem (Caso de Uso Principal + Diagrama de Sequência) -->
+        <div id="tab-solicitar" class="tab-content">
+            <h2>📅 Solicitar Montagem</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                Agende a montagem dos seus móveis selecionando data e horário
+            </p>
+            
+            <div class="user-info" style="display: none;"></div>
+            
+            <form id="form-montagem">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="montagem-data">Data do Serviço:</label>
+                        <input type="date" id="montagem-data" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="montagem-horario">Horário de Início:</label>
+                        <input type="time" id="montagem-horario" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="montagem-valor">Valor Estimado (R$):</label>
+                    <input type="number" id="montagem-valor" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="montagem-servicos">Serviços Adicionais (opcional):</label>
+                    <select id="montagem-servicos" multiple style="height: 100px;">
+                        <option value="">Carregando...</option>
+                    </select>
+                    <small style="color: #666;">Segure Ctrl para selecionar múltiplos</small>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Solicitar Montagem</button>
+            </form>
+            
+            <div id="montagem-result" class="result-box"></div>
+        </div>
+
+        <!-- TAB: Visualizar Agendamentos (Caso de Uso) -->
+        <div id="tab-visualizar" class="tab-content">
+            <h2>👀 Visualizar Status dos Agendamentos</h2>
+            <p style="margin-bottom: 20px; color: #666;">Acompanhe seus agendamentos</p>
+            
+            <div class="user-info" style="display: none;"></div>
+            
+            <button class="btn btn-primary" onclick="visualizarAgendamentos()">🔄 Atualizar Lista</button>
+            
+            <div id="agendamentos-lista" style="margin-top: 20px;">
+                <p>Clique em "Atualizar Lista" para carregar seus agendamentos.</p>
+            </div>
+            
+            <div id="visualizar-result" class="result-box"></div>
+        </div>
+
+        <!-- TAB: Montador -->
+        <div id="tab-montador" class="tab-content">
+            <h2>👷 Área do Montador</h2>
+            <p style="margin-bottom: 20px; color: #666;">Gerencie e finalize suas montagens</p>
+            
+            <h3>✅ Registrar Montagem Concluída</h3>
+            <form id="form-conclusao">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="conclusao-id">ID do Agendamento:</label>
+                        <input type="number" id="conclusao-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="conclusao-horario">Horário de Término:</label>
+                        <input type="time" id="conclusao-horario" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Marcar como Concluído</button>
+            </form>
+            
+            <div id="montador-result" class="result-box"></div>
+        </div>
+
+        <!-- TAB: Administrador -->
+        <div id="tab-admin" class="tab-content">
+            <h2>⚙️ Área do Administrador</h2>
+            <p style="margin-bottom: 20px; color: #666;">Relatórios e gerenciamento do sistema</p>
+            
+            <h3>📊 Relatórios</h3>
+            <button class="btn btn-primary" onclick="gerarRelatorios()">📊 Gerar Relatórios</button>
+            
+            <div id="relatorios-content" style="margin-top: 20px;">
+                <p>Clique em "Gerar Relatórios" para visualizar estatísticas.</p>
+            </div>
+            
+            <hr style="margin: 30px 0;">
+            
+            <h3>➕ Cadastrar Serviço Adicional</h3>
+            <form id="form-servico" onsubmit="cadastrarServico(event)">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="servico-nome">Nome do Serviço:</label>
+                        <input type="text" id="servico-nome" required placeholder="Ex: Instalação de suporte para TV">
+                    </div>
+                    <div class="form-group">
+                        <label for="servico-valor">Valor (R$):</label>
+                        <input type="number" id="servico-valor" step="0.01" required placeholder="150.00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="servico-tempo">Tempo Adicional (minutos):</label>
+                    <input type="number" id="servico-tempo" placeholder="30">
+                </div>
+                <button type="submit" class="btn btn-success">Cadastrar Serviço</button>
+            </form>
+            
+            <div id="admin-result" class="result-box"></div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
