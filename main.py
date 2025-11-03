@@ -20,8 +20,11 @@ if DATABASE_URL:
         DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 else:
-    # Fallback para SQLite local
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/agendamento.db'
+    # Fallback para SQLite local - criar diretório se não existir
+    db_dir = os.path.join(os.getcwd(), 'data')
+    os.makedirs(db_dir, exist_ok=True)
+    db_path = os.path.join(db_dir, 'agendamento.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -182,7 +185,15 @@ class ServicoContratado(db.Model):
 
 # Cria as tabelas
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+        print("✅ Banco de dados inicializado com sucesso!")
+    except Exception as e:
+        print(f"❌ Erro ao inicializar banco: {e}")
+        # Se SQLite falhar, tentar com PostgreSQL ou memória
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        db.create_all()
+        print("✅ Banco de dados em memória inicializado!")
 
 
 # ==================== ROTA PRINCIPAL - FRONT-END ====================
