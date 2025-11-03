@@ -1,0 +1,27 @@
+# .dockerignore - Otimizar build do Docker
+*.md
+.git
+.gitignore
+Dockerfile
+.dockerignore
+.railwayignore
+README_ORIGINAL.md
+APRESENTACAO.md
+COMO_TESTAR.md
+FRONTEND.md
+GITHUB.md
+TESTES.md
+test_sistema.py
+teste_simples.py
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.DS_Store
+Thumbs.db
+agendamento.db
+data/

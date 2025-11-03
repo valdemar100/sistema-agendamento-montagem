@@ -4,13 +4,25 @@ Implementa EXATAMENTE o que consta nos diagramas (sequência, fluxo, casos de us
 Nada mais, nada menos.
 """
 
+import os
 from datetime import datetime, time
 from flask import Flask, request, jsonify, abort, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///agendamento.db'
+
+# Configuração de banco de dados - Railway compatível
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    # Railway fornece DATABASE_URL para PostgreSQL
+    if DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+else:
+    # Fallback para SQLite local
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/agendamento.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 CORS(app)  # Permite requisições do front-end
@@ -648,5 +660,7 @@ def obter_montador(montador_id):
 # -----------------------------
 
 if __name__ == '__main__':
-    # use_reloader=False para evitar problemas no Windows
-    app.run(debug=True, use_reloader=False)
+    # Configuração para Railway - usa variável de ambiente PORT
+    port = int(os.environ.get('PORT', 5000))
+    # use_reloader=False para evitar problemas no Railway
+    app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)

@@ -1,0 +1,10 @@
+# railway.toml - Configuração do Railway
+[build]
+builder = "dockerfile"
+
+[deploy]
+startCommand = "gunicorn --bind 0.0.0.0:$PORT main:app"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
