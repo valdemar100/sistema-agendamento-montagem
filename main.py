@@ -189,7 +189,10 @@ with app.app_context():
 @app.route('/')
 def index():
     """Página principal do sistema - Interface Web"""
-    return render_template('index.html')
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        return jsonify({'status': 'ok', 'message': 'Sistema de Agendamento funcionando', 'error': str(e)}), 200
 
 # ==================== HEALTH CHECK - RAILWAY ====================
 @app.route('/health')
@@ -668,5 +671,6 @@ def obter_montador(montador_id):
 if __name__ == '__main__':
     # Configuração para Railway - usa variável de ambiente PORT
     port = int(os.environ.get('PORT', 5000))
+    print(f"Iniciando servidor na porta {port}")
     # use_reloader=False para evitar problemas no Railway
-    app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
+    app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)

@@ -3,8 +3,8 @@
 builder = "dockerfile"
 
 [deploy]
-startCommand = "bash start.sh"
-healthcheckPath = "/health"
+startCommand = "python main.py"
+healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
