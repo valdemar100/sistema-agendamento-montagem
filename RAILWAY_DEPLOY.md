@@ -79,6 +79,33 @@ No dashboard do Railway você pode:
 
 ## 🐛 Solução de Problemas
 
+### ❌ Erro: "Você precisa especificar um workspaceId"
+
+**Solução 1 - Deploy Manual (Recomendado):**
+1. Acesse [railway.app](https://railway.app)
+2. Clique em "New Project"
+3. Selecione "Empty Project" (ao invés de "Deploy from GitHub")
+4. No projeto criado, vá em "Settings" → "Connect Repo"
+5. Conecte ao repositório `valdemar100/sistema-agendamento-montagem`
+6. O deploy começará automaticamente
+
+**Solução 2 - Usar Railway CLI:**
+```bash
+# Instalar Railway CLI
+npm install -g @railway/cli
+
+# Login
+railway login
+
+# Deploy
+railway deploy
+```
+
+**Solução 3 - Fork do repositório:**
+1. Faça fork do repositório no GitHub
+2. No Railway, conecte ao seu fork
+3. Deploy normalmente
+
 ### Build falha
 - Verifique os logs no Railway dashboard
 - Confirme que `requirements.txt` está correto
