@@ -191,6 +191,12 @@ def index():
     """Página principal do sistema - Interface Web"""
     return render_template('index.html')
 
+# ==================== HEALTH CHECK - RAILWAY ====================
+@app.route('/health')
+def health_check():
+    """Health check para Railway"""
+    return jsonify({'status': 'ok', 'message': 'Sistema funcionando'}), 200
+
 
 # -----------------------------
 # Rotas (SOMENTE o que aparece nos diagramas de casos de uso)
