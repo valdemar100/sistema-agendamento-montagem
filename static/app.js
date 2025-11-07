@@ -99,7 +99,15 @@ function controlarVisibilidadeAbas() {
             // Ativar aba visualizar agendamentos
             visualizarBtn.classList.add('active');
             visualizarTab.classList.add('active');
+            
+            // Carregar agendamentos automaticamente
+            visualizarAgendamentos();
         }
+        
+        // Verificar status de disponibilidade automaticamente para montadores
+        setTimeout(() => {
+            verificarStatusDisponibilidade();
+        }, 1000);
     } else if (currentUser && currentUser.tipo === 'cliente') {
         // Para clientes: esconder aba montador
         if (montadorBtn) montadorBtn.style.display = 'none';
@@ -393,6 +401,90 @@ async function registrarConclusao(event) {
     }
 }
 
+// Confirmar Disponibilidade do Montador
+async function confirmarDisponibilidade(disponivel) {
+    if (!currentUser || currentUser.tipo !== 'montador') {
+        showResult('montador-result', '❌ Função apenas para montadores!', false);
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/montadores/${currentUser.id}/confirmar_disponibilidade`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ disponivel: disponivel })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            const statusText = disponivel ? 'Disponível' : 'Indisponível';
+            const statusColor = disponivel ? '#28a745' : '#dc3545';
+            
+            showResult('montador-result', `✅ Status atualizado: ${statusText}`, true);
+            
+            // Atualizar display do status
+            atualizarDisplayStatus(disponivel, new Date().toLocaleString());
+            
+        } else {
+            showResult('montador-result', `❌ Erro: ${data.erro || 'Não foi possível atualizar status'}`, false);
+        }
+    } catch (error) {
+        showResult('montador-result', `❌ Erro: ${error.message}`, false);
+    }
+}
+
+// Verificar Status Atual de Disponibilidade
+async function verificarStatusDisponibilidade() {
+    if (!currentUser || currentUser.tipo !== 'montador') {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/montadores/${currentUser.id}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+            const disponivel = data.disponivel;
+            atualizarDisplayStatus(disponivel, data.ultima_atualizacao || 'Não informado');
+            showResult('montador-result', '🔄 Status atualizado!', true);
+        } else {
+            showResult('montador-result', '❌ Erro ao verificar status', false);
+        }
+    } catch (error) {
+        console.error('Erro ao verificar status:', error);
+        atualizarDisplayStatus(null, 'Erro ao carregar');
+    }
+}
+
+// Atualizar Display do Status na Interface
+function atualizarDisplayStatus(disponivel, ultimaAtualizacao) {
+    const statusAtual = document.getElementById('status-atual');
+    const ultimaAtualizacaoEl = document.getElementById('ultima-atualizacao');
+    const statusContainer = document.getElementById('status-disponibilidade');
+    
+    if (statusAtual && ultimaAtualizacaoEl && statusContainer) {
+        if (disponivel === true) {
+            statusAtual.textContent = '✅ Disponível';
+            statusAtual.style.color = '#28a745';
+            statusContainer.style.borderLeftColor = '#28a745';
+            statusContainer.style.backgroundColor = '#d4edda';
+        } else if (disponivel === false) {
+            statusAtual.textContent = '❌ Indisponível';
+            statusAtual.style.color = '#dc3545';
+            statusContainer.style.borderLeftColor = '#dc3545';
+            statusContainer.style.backgroundColor = '#f8d7da';
+        } else {
+            statusAtual.textContent = '❓ Status não definido';
+            statusAtual.style.color = '#6c757d';
+            statusContainer.style.borderLeftColor = '#6c757d';
+            statusContainer.style.backgroundColor = '#f8f9fa';
+        }
+        
+        ultimaAtualizacaoEl.textContent = ultimaAtualizacao;
+    }
+}
+
 // Carregar Serviços Adicionais
 async function carregarServicosAdicionais() {
     try {
@@ -433,6 +525,8 @@ function switchTab(tabName) {
         visualizarAgendamentos();
     } else if (tabName === 'solicitar') {
         carregarServicosAdicionais();
+    } else if (tabName === 'montador' && currentUser && currentUser.tipo === 'montador') {
+        verificarStatusDisponibilidade();
     }
 }
 

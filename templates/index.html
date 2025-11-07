@@ -136,6 +136,22 @@
             <h2>👷 Área do Montador</h2>
             <p style="margin-bottom: 20px; color: #666;">Gerencie e finalize suas montagens</p>
             
+            <h3>📅 Confirmar Disponibilidade</h3>
+            <p style="margin-bottom: 15px; color: #666;">Mantenha seu status atualizado para receber novos agendamentos</p>
+            
+            <div id="status-disponibilidade" style="margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #f8f9fa; border-left: 4px solid #007bff;">
+                <p><strong>Status atual:</strong> <span id="status-atual">Carregando...</span></p>
+                <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">Última atualização: <span id="ultima-atualizacao">-</span></p>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 30px;">
+                <button class="btn btn-success" onclick="confirmarDisponibilidade(true)">✅ Disponível</button>
+                <button class="btn btn-danger" onclick="confirmarDisponibilidade(false)">❌ Indisponível</button>
+                <button class="btn btn-primary" onclick="verificarStatusDisponibilidade()">🔄 Atualizar Status</button>
+            </div>
+            
+            <hr style="margin: 30px 0;">
+            
             <h3>✅ Registrar Montagem Concluída</h3>
             <form id="form-conclusao">
                 <div class="grid-2">

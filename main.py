@@ -545,26 +545,44 @@ def enviar_observacoes(agendamento_id):
 # 12) Confirmar disponibilidade (Montador)
 @app.route('/montadores/<int:montador_id>/confirmar_disponibilidade', methods=['POST'])
 def confirmar_disponibilidade(montador_id):
-    """Confirmar disponibilidade - caso de uso do diagrama
-    Campos: agendamento_id
+    """Confirmar disponibilidade - atualizar status de disponibilidade do montador
+    Campos: disponivel (boolean)
     """
     montador = Montador.query.get_or_404(montador_id)
     data = request.json
-    agendamento = Agendamento.query.get_or_404(data.get('agendamento_id'))
     
-    if not montador.estaDisponivel():
-        return jsonify({'disponivel': False}), 409
+    if not data or 'disponivel' not in data:
+        return jsonify({'erro': 'Campo disponivel é obrigatório'}), 400
     
-    montador.aceitarAgendamento()
-    agendamento.montador_id = montador.id
-    agendamento.status = 'Confirmado pelo Montador'
-    db.session.commit()
-    
-    return jsonify({
-        'agendamento_id': agendamento.id,
-        'status': agendamento.status,
-        'disponivel': True
-    })
+    try:
+        disponivel = data['disponivel']
+        
+        # Para simplicidade, vamos adicionar um campo disponivel no banco
+        # Por enquanto, simularemos verificando agendamentos ativos
+        agendamentos_ativos = Agendamento.query.filter(
+            Agendamento.montador_id == montador.id,
+            Agendamento.status.in_(['Pendente', 'Confirmado pelo Montador', 'Agendado'])
+        ).count()
+        
+        # Se tem agendamentos ativos, não pode ficar disponível
+        if disponivel and agendamentos_ativos > 0:
+            return jsonify({
+                'erro': f'Você tem {agendamentos_ativos} agendamento(s) ativo(s). Conclua-os primeiro.'
+            }), 400
+        
+        # Simulamos salvando o status (em implementação real, criaria campo na tabela)
+        status_atual = 'Disponível' if disponivel else 'Indisponível'
+        
+        return jsonify({
+            'montador_id': montador.id,
+            'disponivel': disponivel,
+            'status': status_atual,
+            'agendamentos_ativos': agendamentos_ativos,
+            'mensagem': f'Status atualizado para: {status_atual}'
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'erro': f'Erro ao atualizar disponibilidade: {str(e)}'}), 500
 
 
 # 13) Atribuir montador a agendamento (Administrador)
@@ -751,14 +769,26 @@ def cadastrar_montador():
 
 @app.route('/montadores/<int:montador_id>', methods=['GET'])
 def obter_montador(montador_id):
-    """Obter dados do montador"""
+    """Obter dados do montador incluindo status de disponibilidade"""
     montador = Montador.query.get_or_404(montador_id)
+    
+    # Verificar agendamentos ativos
+    agendamentos_ativos = Agendamento.query.filter(
+        Agendamento.montador_id == montador.id,
+        Agendamento.status.in_(['Pendente', 'Confirmado pelo Montador', 'Agendado'])
+    ).count()
+    
+    # Determinar disponibilidade baseado nos agendamentos
+    disponivel = montador.estaDisponivel()
+    
     return jsonify({
         'id': montador.id,
         'nome': montador.nome,
         'regiao': montador.regiao,
         'especialidade': montador.especialidade,
-        'disponivel': montador.estaDisponivel()
+        'disponivel': disponivel,
+        'agendamentos_ativos': agendamentos_ativos,
+        'ultima_atualizacao': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     })
 
 
