@@ -31,6 +31,9 @@ window.addEventListener('DOMContentLoaded', () => {
             userInfoHeader.style.display = 'block';
         }
         
+        // Controlar visibilidade das abas baseada no tipo de usuário
+        controlarVisibilidadeAbas();
+        
         console.log('Usuário logado:', currentUser);
     } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);
@@ -68,6 +71,54 @@ function getStatusBadge(status) {
         'Cancelado': 'status-cancelado'
     };
     return `<span class="status-badge ${statusMap[status] || ''}">${status}</span>`;
+}
+
+// Controlar visibilidade das abas baseada no tipo de usuário
+function controlarVisibilidadeAbas() {
+    const enderecoBtn = document.querySelector('[data-tab="endereco"]');
+    const enderecoTab = document.getElementById('tab-endereco');
+    const solicitarBtn = document.querySelector('[data-tab="solicitar"]');
+    const montadorBtn = document.querySelector('[data-tab="montador"]');
+    const montadorTab = document.getElementById('tab-montador');
+    
+    if (currentUser && currentUser.tipo === 'montador') {
+        // Para montadores: esconder cadastrar endereço e solicitar montagem
+        if (enderecoBtn) enderecoBtn.style.display = 'none';
+        if (enderecoTab) enderecoTab.style.display = 'none';
+        if (solicitarBtn) solicitarBtn.style.display = 'none';
+        
+        // Ativar aba de visualizar agendamentos como padrão para montadores
+        const visualizarBtn = document.querySelector('[data-tab="visualizar"]');
+        const visualizarTab = document.getElementById('tab-visualizar');
+        
+        if (visualizarBtn && visualizarTab) {
+            // Remover active de todas as abas
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Ativar aba visualizar agendamentos
+            visualizarBtn.classList.add('active');
+            visualizarTab.classList.add('active');
+        }
+    } else if (currentUser && currentUser.tipo === 'cliente') {
+        // Para clientes: esconder aba montador
+        if (montadorBtn) montadorBtn.style.display = 'none';
+        if (montadorTab) montadorTab.style.display = 'none';
+        
+        // Garantir que a aba endereço seja a ativa por padrão para clientes
+        const activeTab = document.querySelector('.tab-content.active');
+        if (!activeTab || activeTab.id === 'tab-montador') {
+            // Remover active de todas as abas
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Ativar aba endereço
+            if (enderecoBtn && enderecoTab) {
+                enderecoBtn.classList.add('active');
+                enderecoTab.classList.add('active');
+            }
+        }
+    }
 }
 
 // ==================== CLIENTE ====================
