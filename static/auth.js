@@ -114,19 +114,12 @@ async function cadastrarUsuario(event) {
             if (response.ok) {
                 showResult('cadastro-result', '✅ Cliente cadastrado com sucesso! Faça login para continuar.', true);
                 // Limpar formulário
-                document.getElementById('cadastro-form').reset();
-                // Redirecionar para aba de login
+                const form = document.getElementById('cadastro-form');
+                if (form) form.reset();
+                // Redirecionar para aba de login após 2 segundos
                 setTimeout(() => {
-                    // Encontrar o botão de Login especificamente
-                    const loginBtn = document.querySelector('.auth-tab-btn[onclick*="login"]') || 
-                                   document.querySelector('.auth-tab-btn');
-                    if (loginBtn) {
-                        loginBtn.click();
-                    } else {
-                        // Se não encontrou o botão, pelo menos recarrega a página
-                        window.location.reload();
-                    }
-                }, 1500);
+                    showAuthTab('login');
+                }, 2000);
             } else {
                 showResult('cadastro-result', `❌ ${data.erro || 'Não foi possível cadastrar'}`, false);
             }
@@ -156,19 +149,12 @@ async function cadastrarUsuario(event) {
             if (response.ok) {
                 showResult('cadastro-result', '✅ Montador cadastrado com sucesso! Faça login para continuar.', true);
                 // Limpar formulário
-                document.getElementById('cadastro-form').reset();
-                // Redirecionar para aba de login
+                const form = document.getElementById('cadastro-form');
+                if (form) form.reset();
+                // Redirecionar para aba de login após 2 segundos
                 setTimeout(() => {
-                    // Encontrar o botão de Login especificamente
-                    const loginBtn = document.querySelector('.auth-tab-btn[onclick*="login"]') || 
-                                   document.querySelector('.auth-tab-btn');
-                    if (loginBtn) {
-                        loginBtn.click();
-                    } else {
-                        // Se não encontrou o botão, pelo menos recarrega a página
-                        window.location.reload();
-                    }
-                }, 1500);
+                    showAuthTab('login');
+                }, 2000);
             } else {
                 showResult('cadastro-result', `❌ ${data.erro || 'Não foi possível cadastrar'}`, false);
             }
