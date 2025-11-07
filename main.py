@@ -204,23 +204,39 @@ def cadastrar_cliente():
     Campos: nome, email, senha, telefone, cpf, cep
     """
     data = request.json
-    if not data or 'email' not in data or 'senha' not in data:
-        return jsonify({'erro': 'Email e senha são obrigatórios'}), 400
     
+    # Validar dados obrigatórios
+    if not data:
+        return jsonify({'erro': 'Nenhum dado enviado'}), 400
+    
+    if 'email' not in data or not data['email']:
+        return jsonify({'erro': 'Email é obrigatório'}), 400
+    
+    if 'senha' not in data or not data['senha']:
+        return jsonify({'erro': 'Senha é obrigatória'}), 400
+    
+    if len(data['senha']) < 6:
+        return jsonify({'erro': 'A senha deve ter no mínimo 6 caracteres'}), 400
+    
+    # Verificar se email já existe
     if Cliente.query.filter_by(email=data['email']).first():
-        return jsonify({'erro': 'Email já cadastrado'}), 400
+        return jsonify({'erro': 'Este email já está cadastrado'}), 400
     
-    cliente = Cliente(
-        nome=data.get('nome', ''),
-        email=data['email'],
-        senha=data['senha'],
-        telefone=data.get('telefone'),
-        cpf=data.get('cpf'),
-        cep=data.get('cep')
-    )
-    db.session.add(cliente)
-    db.session.commit()
-    return jsonify({'id': cliente.id, 'email': cliente.email, 'nome': cliente.nome}), 201
+    try:
+        cliente = Cliente(
+            nome=data.get('nome', ''),
+            email=data['email'],
+            senha=data['senha'],
+            telefone=data.get('telefone'),
+            cpf=data.get('cpf'),
+            cep=data.get('cep')
+        )
+        db.session.add(cliente)
+        db.session.commit()
+        return jsonify({'id': cliente.id, 'email': cliente.email, 'nome': cliente.nome}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'erro': f'Erro ao cadastrar: {str(e)}'}), 500
 
 
 # 2) Fazer login (Sistema de Loja e Cliente)
@@ -639,23 +655,37 @@ def cadastrar_montador():
     """Cadastrar montador"""
     data = request.json
     
-    if not data or 'email' not in data or 'senha' not in data:
-        return jsonify({'erro': 'Email e senha são obrigatórios'}), 400
+    # Validar dados obrigatórios
+    if not data:
+        return jsonify({'erro': 'Nenhum dado enviado'}), 400
+    
+    if 'email' not in data or not data['email']:
+        return jsonify({'erro': 'Email é obrigatório'}), 400
+    
+    if 'senha' not in data or not data['senha']:
+        return jsonify({'erro': 'Senha é obrigatória'}), 400
+    
+    if len(data['senha']) < 6:
+        return jsonify({'erro': 'A senha deve ter no mínimo 6 caracteres'}), 400
     
     # Verificar se email já está cadastrado
     if Montador.query.filter_by(email=data['email']).first():
-        return jsonify({'erro': 'Email já cadastrado'}), 400
+        return jsonify({'erro': 'Este email já está cadastrado'}), 400
     
-    montador = Montador(
-        nome=data.get('nome', ''),
-        email=data['email'],
-        senha=data['senha'],
-        regiao=data.get('regiao'),
-        especialidade=data.get('especialidade')
-    )
-    db.session.add(montador)
-    db.session.commit()
-    return jsonify({'id': montador.id, 'nome': montador.nome}), 201
+    try:
+        montador = Montador(
+            nome=data.get('nome', ''),
+            email=data['email'],
+            senha=data['senha'],
+            regiao=data.get('regiao'),
+            especialidade=data.get('especialidade')
+        )
+        db.session.add(montador)
+        db.session.commit()
+        return jsonify({'id': montador.id, 'nome': montador.nome}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'erro': f'Erro ao cadastrar: {str(e)}'}), 500
 
 
 @app.route('/montadores/<int:montador_id>', methods=['GET'])
