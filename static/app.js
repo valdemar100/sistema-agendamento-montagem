@@ -200,7 +200,7 @@ async function solicitarMontagem(event) {
         itens: [{
             movel_id: 1, // Simplificado para MVP
             quantidade: 1,
-            movel_preco: parseFloat(document.getElementById('montagem-valor').value)
+            movel_preco: 0.00 // Valor será definido pelo sistema/administrador
         }],
         servicos: servicosSelecionados
     };
@@ -280,7 +280,7 @@ async function visualizarAgendamentos() {
                 
                 <div class="agendamento-actions" style="margin-top: 15px; display: flex; gap: 10px;">
                     ${ag.status === 'Pendente' || ag.status === 'Agendado' || ag.status === 'Confirmado' ? 
-                        `<button class="btn btn-warning" onclick="alterarAgendamento(${ag.id}, '${ag.data_servico}', '${ag.horario_inicio}', ${ag.valor_total})" style="background: #f39c12; border: none;">✏️ Alterar</button>` : ''}
+                        `<button class="btn btn-warning" onclick="alterarAgendamento(${ag.id}, '${ag.data_servico}', '${ag.horario_inicio}')" style="background: #f39c12; border: none;">✏️ Alterar</button>` : ''}
                     ${ag.status !== 'Cancelado' && ag.status !== 'Concluído' ? 
                         `<button class="btn btn-danger" onclick="cancelarAgendamento(${ag.id})" style="background: #e74c3c; border: none;">❌ Cancelar</button>` : ''}
                 </div>
@@ -316,7 +316,7 @@ async function cancelarAgendamento(agendamentoId) {
 }
 
 // 7. Alterar Agendamento
-function alterarAgendamento(agendamentoId, dataAtual, horarioAtual, valorAtual) {
+function alterarAgendamento(agendamentoId, dataAtual, horarioAtual) {
     // Criar um modal/formulário para alterar o agendamento
     const modal = document.createElement('div');
     modal.style.cssText = `
@@ -342,12 +342,6 @@ function alterarAgendamento(agendamentoId, dataAtual, horarioAtual, valorAtual) 
                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
                 </div>
                 
-                <div style="margin-bottom: 20px;">
-                    <label for="novo-valor" style="display: block; margin-bottom: 5px; font-weight: bold;">Novo Valor (R$):</label>
-                    <input type="number" id="novo-valor" value="${valorAtual}" step="0.01" min="0" required 
-                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
-                </div>
-                
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
                     <button type="button" onclick="this.parentElement.parentElement.parentElement.parentElement.remove()" 
                             style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 5px; cursor: pointer;">
@@ -370,7 +364,6 @@ function alterarAgendamento(agendamentoId, dataAtual, horarioAtual, valorAtual) 
         
         const novaData = document.getElementById('nova-data').value;
         const novoHorario = document.getElementById('novo-horario').value;
-        const novoValor = parseFloat(document.getElementById('novo-valor').value);
         
         try {
             const response = await fetch(`${API_URL}/agendamentos/${agendamentoId}/alterar`, {
@@ -378,8 +371,7 @@ function alterarAgendamento(agendamentoId, dataAtual, horarioAtual, valorAtual) 
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     data_servico: novaData,
-                    horario_inicio: novoHorario,
-                    valor_total: novoValor
+                    horario_inicio: novoHorario
                 })
             });
             
