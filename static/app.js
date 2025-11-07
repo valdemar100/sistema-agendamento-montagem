@@ -194,8 +194,12 @@ async function visualizarAgendamentos() {
                 <p><strong>Horário:</strong> ${ag.horario_inicio}</p>
                 <p><strong>Status:</strong> ${getStatusBadge(ag.status)}</p>
                 <p><strong>Valor:</strong> R$ ${ag.valor_total.toFixed(2)}</p>
-                ${ag.status !== 'Cancelado' && ag.status !== 'Concluído' ? 
-                    `<button class="btn btn-danger" onclick="cancelarAgendamento(${ag.id})">Cancelar</button>` : ''}
+                <div class="agendamento-actions" style="margin-top: 15px; display: flex; gap: 10px;">
+                    ${ag.status === 'Agendado' || ag.status === 'Confirmado' ? 
+                        `<button class="btn btn-warning" onclick="alterarAgendamento(${ag.id}, '${ag.data_servico}', '${ag.horario_inicio}', ${ag.valor_total})" style="background: #f39c12; border: none;">✏️ Alterar</button>` : ''}
+                    ${ag.status !== 'Cancelado' && ag.status !== 'Concluído' ? 
+                        `<button class="btn btn-danger" onclick="cancelarAgendamento(${ag.id})" style="background: #e74c3c; border: none;">❌ Cancelar</button>` : ''}
+                </div>
             </div>
         `).join('');
         
@@ -225,6 +229,89 @@ async function cancelarAgendamento(agendamentoId) {
     } catch (error) {
         showResult('visualizar-result', `❌ Erro: ${error.message}`, false);
     }
+}
+
+// 7. Alterar Agendamento
+function alterarAgendamento(agendamentoId, dataAtual, horarioAtual, valorAtual) {
+    // Criar um modal/formulário para alterar o agendamento
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(0,0,0,0.5); display: flex; justify-content: center; 
+        align-items: center; z-index: 1000;
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: white; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%;">
+            <h3>✏️ Alterar Agendamento #${agendamentoId}</h3>
+            
+            <form id="form-alterar-agendamento">
+                <div style="margin-bottom: 15px;">
+                    <label for="nova-data" style="display: block; margin-bottom: 5px; font-weight: bold;">Nova Data:</label>
+                    <input type="date" id="nova-data" value="${dataAtual}" required 
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label for="novo-horario" style="display: block; margin-bottom: 5px; font-weight: bold;">Novo Horário:</label>
+                    <input type="time" id="novo-horario" value="${horarioAtual}" required 
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="novo-valor" style="display: block; margin-bottom: 5px; font-weight: bold;">Novo Valor (R$):</label>
+                    <input type="number" id="novo-valor" value="${valorAtual}" step="0.01" min="0" required 
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" onclick="this.parentElement.parentElement.parentElement.parentElement.remove()" 
+                            style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 5px; cursor: pointer;">
+                        Cancelar
+                    </button>
+                    <button type="submit" 
+                            style="padding: 10px 20px; border: none; background: #f39c12; color: white; border-radius: 5px; cursor: pointer;">
+                        💾 Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Adicionar event listener para o formulário
+    modal.querySelector('#form-alterar-agendamento').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const novaData = document.getElementById('nova-data').value;
+        const novoHorario = document.getElementById('novo-horario').value;
+        const novoValor = parseFloat(document.getElementById('novo-valor').value);
+        
+        try {
+            const response = await fetch(`${API_URL}/agendamentos/${agendamentoId}/alterar`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    data_servico: novaData,
+                    horario_inicio: novoHorario,
+                    valor_total: novoValor
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                showResult('visualizar-result', `✅ Agendamento #${agendamentoId} alterado com sucesso!`, true);
+                modal.remove();
+                visualizarAgendamentos(); // Atualiza a lista
+            } else {
+                alert(`❌ Erro: ${data.erro || 'Não foi possível alterar o agendamento'}`);
+            }
+        } catch (error) {
+            alert(`❌ Erro: ${error.message}`);
+        }
+    });
 }
 
 // ==================== MONTADOR ====================

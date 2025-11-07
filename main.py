@@ -4,7 +4,7 @@ Implementa EXATAMENTE o que consta nos diagramas (sequência, fluxo, casos de us
 Nada mais, nada menos.
 """
 
-from datetime import datetime, time
+from datetime import datetime, time, date
 from flask import Flask, request, jsonify, abort, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -441,6 +441,61 @@ def cancelar_agendamento(agendamento_id):
     agendamento = Agendamento.query.get_or_404(agendamento_id)
     agendamento.cancelarAgendamento()
     return jsonify({'id': agendamento.id, 'status': agendamento.status})
+
+
+# 9.1) Alterar agendamento (Cliente)
+@app.route('/agendamentos/<int:agendamento_id>/alterar', methods=['PUT'])
+def alterar_agendamento(agendamento_id):
+    """Alterar agendamento - permite modificar data, horário e valor"""
+    agendamento = Agendamento.query.get_or_404(agendamento_id)
+    data = request.json
+    
+    # Verificar se agendamento pode ser alterado
+    if agendamento.status in ['Cancelado', 'Concluído']:
+        return jsonify({'erro': f'Não é possível alterar agendamento com status: {agendamento.status}'}), 400
+    
+    # Validar dados obrigatórios
+    if not data:
+        return jsonify({'erro': 'Nenhum dado enviado'}), 400
+    
+    try:
+        # Atualizar campos se fornecidos
+        if 'data_servico' in data:
+            nova_data = datetime.strptime(data['data_servico'], '%Y-%m-%d').date()
+            if nova_data <= date.today():
+                return jsonify({'erro': 'A data deve ser futura'}), 400
+            agendamento.data_servico = nova_data
+        
+        if 'horario_inicio' in data:
+            novo_horario = datetime.strptime(data['horario_inicio'], '%H:%M').time()
+            agendamento.horario_inicio = novo_horario
+        
+        if 'valor_total' in data:
+            novo_valor = float(data['valor_total'])
+            if novo_valor <= 0:
+                return jsonify({'erro': 'O valor deve ser maior que zero'}), 400
+            agendamento.valor_total = novo_valor
+        
+        # Atualizar status para "Reagendado" se alterou data/horário
+        if 'data_servico' in data or 'horario_inicio' in data:
+            agendamento.status = 'Reagendado'
+        
+        db.session.commit()
+        
+        return jsonify({
+            'id': agendamento.id,
+            'status': agendamento.status,
+            'data_servico': agendamento.data_servico.strftime('%Y-%m-%d'),
+            'horario_inicio': agendamento.horario_inicio.strftime('%H:%M'),
+            'valor_total': float(agendamento.valor_total),
+            'mensagem': 'Agendamento alterado com sucesso!'
+        }), 200
+        
+    except ValueError as e:
+        return jsonify({'erro': f'Dados inválidos: {str(e)}'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'erro': f'Erro ao alterar agendamento: {str(e)}'}), 500
 
 
 # 10) Registrar montagem concluída (Montador) - extend de "Visualizar agendamentos"
