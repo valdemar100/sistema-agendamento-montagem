@@ -5,6 +5,42 @@ const API_URL = 'http://localhost:5000';
 let currentUser = null;
 let currentEndereco = null;
 
+// ==================== VERIFICAÇÃO DE LOGIN ====================
+// Verificar se usuário está logado ao carregar a página
+window.addEventListener('DOMContentLoaded', () => {
+    const userDataString = localStorage.getItem('user');
+    
+    if (!userDataString) {
+        // Se não está logado, redirecionar para login
+        window.location.href = '/';
+        return;
+    }
+    
+    try {
+        currentUser = JSON.parse(userDataString);
+        
+        // Mostrar informações do usuário
+        const userInfoHeader = document.getElementById('user-info-header');
+        const userNameDisplay = document.getElementById('user-name-display');
+        
+        if (userInfoHeader && userNameDisplay) {
+            userNameDisplay.textContent = `👤 ${currentUser.nome} (${currentUser.tipo})`;
+            userInfoHeader.style.display = 'block';
+        }
+        
+        console.log('Usuário logado:', currentUser);
+    } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+        window.location.href = '/';
+    }
+});
+
+// Função de logout
+function logout() {
+    localStorage.removeItem('user');
+    window.location.href = '/';
+}
+
 // Utilitários
 function showResult(elementId, message, isSuccess) {
     const resultBox = document.getElementById(elementId);
@@ -33,63 +69,7 @@ function getStatusBadge(status) {
 
 // ==================== CLIENTE ====================
 
-// 1. Cadastrar-se
-async function cadastrarCliente(event) {
-    event.preventDefault();
-    const formData = {
-        nome: document.getElementById('cadastro-nome').value,
-        email: document.getElementById('cadastro-email').value,
-        telefone: document.getElementById('cadastro-telefone').value,
-        cpf: document.getElementById('cadastro-cpf').value,
-        cep: document.getElementById('cadastro-cep').value
-    };
-
-    try {
-        const response = await fetch(`${API_URL}/cadastrar`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
-        const data = await response.json();
-        
-        if (response.ok) {
-            showResult('cadastro-result', `✅ Cliente cadastrado com sucesso! ID: ${data.id}`, true);
-            document.getElementById('form-cadastro').reset();
-        } else {
-            showResult('cadastro-result', `❌ Erro: ${data.erro}`, false);
-        }
-    } catch (error) {
-        showResult('cadastro-result', `❌ Erro ao conectar com o servidor: ${error.message}`, false);
-    }
-}
-
-// 2. Fazer Login
-async function fazerLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('login-email').value;
-
-    try {
-        const response = await fetch(`${API_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email })
-        });
-        const data = await response.json();
-        
-        if (response.ok) {
-            currentUser = data;
-            showResult('login-result', `✅ Bem-vindo, ${data.nome}!`, true);
-            updateUserInfo();
-            document.getElementById('login-email').value = '';
-            // Muda para aba de solicitar montagem
-            setTimeout(() => switchTab('solicitar'), 1000);
-        } else {
-            showResult('login-result', `❌ Erro: ${data.erro}`, false);
-        }
-    } catch (error) {
-        showResult('login-result', `❌ Erro ao conectar: ${error.message}`, false);
-    }
-}
+// FUNÇÕES DE CADASTRO E LOGIN REMOVIDAS (agora estão em auth.js)
 
 // 3. Cadastrar Endereço
 async function cadastrarEndereco(event) {
@@ -379,6 +359,7 @@ function updateUserInfo() {
                 <p><strong>Nome:</strong> ${currentUser.nome}</p>
                 <p><strong>Email:</strong> ${currentUser.email}</p>
                 <p><strong>ID:</strong> ${currentUser.id}</p>
+                <p><strong>Tipo:</strong> ${currentUser.tipo}</p>
             `;
             el.style.display = 'block';
         } else {
@@ -389,12 +370,14 @@ function updateUserInfo() {
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    // Event listeners para os formulários
-    document.getElementById('form-cadastro').addEventListener('submit', cadastrarCliente);
-    document.getElementById('form-login').addEventListener('submit', fazerLogin);
-    document.getElementById('form-endereco').addEventListener('submit', cadastrarEndereco);
-    document.getElementById('form-montagem').addEventListener('submit', solicitarMontagem);
-    document.getElementById('form-conclusao').addEventListener('submit', registrarConclusao);
+    // Event listeners para os formulários (removidos cadastro e login)
+    const formEndereco = document.getElementById('form-endereco');
+    const formMontagem = document.getElementById('form-montagem');
+    const formConclusao = document.getElementById('form-conclusao');
+    
+    if (formEndereco) formEndereco.addEventListener('submit', cadastrarEndereco);
+    if (formMontagem) formMontagem.addEventListener('submit', solicitarMontagem);
+    if (formConclusao) formConclusao.addEventListener('submit', registrarConclusao);
     
     // Navegação entre tabs
     document.querySelectorAll('.tab-button').forEach(button => {

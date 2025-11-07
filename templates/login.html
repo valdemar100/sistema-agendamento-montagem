@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Agendamento</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .auth-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #6c5ce7;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .auth-tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .auth-tab-btn.active {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+        }
+        
+        .auth-content {
+            display: none;
+        }
+        
+        .auth-content.active {
+            display: block;
+        }
+        
+        .tipo-usuario-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .tipo-usuario-option {
+            flex: 1;
+            position: relative;
+        }
+        
+        .tipo-usuario-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .tipo-usuario-label {
+            display: block;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .tipo-usuario-option input[type="radio"]:checked + .tipo-usuario-label {
+            border-color: #6c5ce7;
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+        }
+        
+        .tipo-usuario-label:hover {
+            border-color: #a29bfe;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <h1>🪑 Sistema de Agendamento</h1>
+                <p>Gestão de Montagem de Móveis</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="showAuthTab('login')">🔐 Login</button>
+                <button class="auth-tab-btn" onclick="showAuthTab('cadastro')">📝 Cadastrar-se</button>
+            </div>
+            
+            <!-- TAB LOGIN -->
+            <div id="auth-login" class="auth-content active">
+                <h2>Fazer Login</h2>
+                <p style="color: #666; margin-bottom: 20px;">Acesse o sistema</p>
+                
+                <form id="form-login" onsubmit="fazerLogin(event)">
+                    <div class="form-group">
+                        <label for="login-email">Email: *</label>
+                        <input type="email" id="login-email" required placeholder="seu@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="login-senha">Senha: *</label>
+                        <input type="password" id="login-senha" required placeholder="Digite sua senha">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+                </form>
+                
+                <div id="login-result" class="result-box"></div>
+            </div>
+            
+            <!-- TAB CADASTRO -->
+            <div id="auth-cadastro" class="auth-content">
+                <h2>Criar Conta</h2>
+                <p style="color: #666; margin-bottom: 20px;">Preencha todos os campos</p>
+                
+                <form id="form-cadastro" onsubmit="cadastrarUsuario(event)">
+                    <div class="form-group">
+                        <label>Tipo de Usuário: *</label>
+                        <div class="tipo-usuario-group">
+                            <div class="tipo-usuario-option">
+                                <input type="radio" id="tipo-cliente" name="tipo_usuario" value="cliente" required>
+                                <label for="tipo-cliente" class="tipo-usuario-label">
+                                    👤 Cliente
+                                </label>
+                            </div>
+                            <div class="tipo-usuario-option">
+                                <input type="radio" id="tipo-montador" name="tipo_usuario" value="montador" required>
+                                <label for="tipo-montador" class="tipo-usuario-label">
+                                    👷 Montador
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cadastro-nome">Nome Completo: *</label>
+                        <input type="text" id="cadastro-nome" required placeholder="Seu nome completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cadastro-email">Email: *</label>
+                        <input type="email" id="cadastro-email" required placeholder="seu@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cadastro-senha">Senha: *</label>
+                        <input type="password" id="cadastro-senha" required placeholder="Crie uma senha" minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cadastro-telefone">Telefone: *</label>
+                        <input type="tel" id="cadastro-telefone" required placeholder="11999999999">
+                    </div>
+                    
+                    <!-- Campos específicos para CLIENTE -->
+                    <div id="campos-cliente" style="display: none;">
+                        <div class="form-group">
+                            <label for="cadastro-cpf">CPF: *</label>
+                            <input type="text" id="cadastro-cpf" placeholder="12345678900" maxlength="11">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cadastro-cep">CEP: *</label>
+                            <input type="text" id="cadastro-cep" placeholder="01310100" maxlength="8">
+                        </div>
+                    </div>
+                    
+                    <!-- Campos específicos para MONTADOR -->
+                    <div id="campos-montador" style="display: none;">
+                        <div class="form-group">
+                            <label for="cadastro-regiao">Região de Atendimento:</label>
+                            <input type="text" id="cadastro-regiao" placeholder="Ex: Zona Sul, Centro">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cadastro-especialidade">Especialidade:</label>
+                            <input type="text" id="cadastro-especialidade" placeholder="Ex: Móveis planejados, Escritório">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success" style="width: 100%;">Cadastrar</button>
+                </form>
+                
+                <div id="cadastro-result" class="result-box"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/auth.js"></script>
+</body>
+</html>

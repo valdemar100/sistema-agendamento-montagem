@@ -25,6 +25,7 @@ class Cliente(db.Model):
     id = db.Column('ID_Cliente', db.Integer, primary_key=True)
     nome = db.Column('Nome', db.String, nullable=False)
     email = db.Column('Email', db.String, unique=True, nullable=False)
+    senha = db.Column('Senha', db.String, nullable=False)
     telefone = db.Column('Telefone', db.String(14))
     cpf = db.Column('CPF', db.String(11))
     cep = db.Column('CEP', db.String(8))
@@ -61,6 +62,8 @@ class Montador(db.Model):
     
     id = db.Column('ID_Montador', db.Integer, primary_key=True)
     nome = db.Column('Nome', db.String, nullable=False)
+    email = db.Column('Email', db.String, unique=True, nullable=False)
+    senha = db.Column('Senha', db.String, nullable=False)
     regiao = db.Column('Regiao_Atendimento', db.String)
     especialidade = db.Column('Especialidade', db.String)
 
@@ -173,10 +176,15 @@ with app.app_context():
     db.create_all()
 
 
-# ==================== ROTA PRINCIPAL - FRONT-END ====================
+# ==================== ROTAS DE FRONT-END ====================
 @app.route('/')
-def index():
-    """Página principal do sistema - Interface Web"""
+def login_page():
+    """Página de Login/Cadastro"""
+    return render_template('login.html')
+
+@app.route('/sistema')
+def sistema():
+    """Página principal do sistema - Interface Web (requer login)"""
     return render_template('index.html')
 
 
@@ -188,17 +196,19 @@ def index():
 @app.route('/cadastrar', methods=['POST'])
 def cadastrar_cliente():
     """Cadastrar-se - Caso de uso do diagrama
-    Campos: nome, email, telefone, cpf, cep
+    Campos: nome, email, senha, telefone, cpf, cep
     """
     data = request.json
-    if not data or 'email' not in data:
-        abort(400)
+    if not data or 'email' not in data or 'senha' not in data:
+        return jsonify({'erro': 'Email e senha são obrigatórios'}), 400
+    
     if Cliente.query.filter_by(email=data['email']).first():
         return jsonify({'erro': 'Email já cadastrado'}), 400
     
     cliente = Cliente(
         nome=data.get('nome', ''),
         email=data['email'],
+        senha=data['senha'],
         telefone=data.get('telefone'),
         cpf=data.get('cpf'),
         cep=data.get('cep')
@@ -212,15 +222,18 @@ def cadastrar_cliente():
 @app.route('/login', methods=['POST'])
 def fazer_login():
     """Fazer login - Caso de uso do diagrama
-    Campos: email
+    Campos: email, senha
     """
     data = request.json
-    if not data or 'email' not in data:
-        abort(400)
+    if not data or 'email' not in data or 'senha' not in data:
+        return jsonify({'erro': 'Email e senha são obrigatórios'}), 400
     
     cliente = Cliente.query.filter_by(email=data['email']).first()
     if not cliente:
-        return jsonify({'erro': 'Cliente não encontrado'}), 404
+        return jsonify({'erro': 'Usuário não encontrado'}), 404
+    
+    if cliente.senha != data['senha']:
+        return jsonify({'erro': 'Senha incorreta'}), 401
     
     return jsonify({'id': cliente.id, 'email': cliente.email, 'nome': cliente.nome})
 
@@ -620,14 +633,24 @@ def gerenciar_usuarios():
 def cadastrar_montador():
     """Cadastrar montador"""
     data = request.json
+    
+    if not data or 'email' not in data or 'senha' not in data:
+        return jsonify({'erro': 'Email e senha são obrigatórios'}), 400
+    
+    # Verificar se email já está cadastrado
+    if Montador.query.filter_by(email=data['email']).first():
+        return jsonify({'erro': 'Email já cadastrado'}), 400
+    
     montador = Montador(
         nome=data.get('nome', ''),
+        email=data['email'],
+        senha=data['senha'],
         regiao=data.get('regiao'),
         especialidade=data.get('especialidade')
     )
     db.session.add(montador)
     db.session.commit()
-    return jsonify({'id': montador.id}), 201
+    return jsonify({'id': montador.id, 'nome': montador.nome}), 201
 
 
 @app.route('/montadores/<int:montador_id>', methods=['GET'])
@@ -640,6 +663,28 @@ def obter_montador(montador_id):
         'regiao': montador.regiao,
         'especialidade': montador.especialidade,
         'disponivel': montador.estaDisponivel()
+    })
+
+
+@app.route('/montadores/login', methods=['POST'])
+def login_montador():
+    """Login de montador por email e senha"""
+    data = request.json
+    
+    if not data or 'email' not in data or 'senha' not in data:
+        return jsonify({'erro': 'Email e senha são obrigatórios'}), 400
+    
+    montador = Montador.query.filter_by(email=data['email']).first()
+    
+    if not montador:
+        return jsonify({'erro': 'Usuário não encontrado'}), 404
+    
+    if montador.senha != data['senha']:
+        return jsonify({'erro': 'Senha incorreta'}), 401
+    
+    return jsonify({
+        'id': montador.id,
+        'nome': montador.nome
     })
 
 

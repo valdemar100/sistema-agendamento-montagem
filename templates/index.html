@@ -11,80 +11,26 @@
         <div class="header">
             <h1>🪑 Sistema de Agendamento de Montagem</h1>
             <p>Gestão completa de agendamentos de montagem de móveis</p>
+            <div id="user-info-header" style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 10px; display: none;">
+                <span id="user-name-display"></span>
+                <button onclick="logout()" style="margin-left: 15px; padding: 5px 15px; border: none; background: #ff6b6b; color: white; border-radius: 5px; cursor: pointer;">� Sair</button>
+            </div>
         </div>
 
-        <!-- Informações do usuário logado -->
-        <div class="user-info" style="display: none;"></div>
-
         <!-- Navegação por Casos de Uso -->
-        <div class="tabs">
-            <button class="tab-button active" data-tab="cadastro">📝 Cadastrar-se</button>
-            <button class="tab-button" data-tab="login">🔐 Fazer Login</button>
+        <div class="tabs" id="main-tabs">
             <button class="tab-button" data-tab="endereco">🏠 Cadastrar Endereço</button>
-            <button class="tab-button" data-tab="solicitar">📅 Solicitar Montagem</button>
+            <button class="tab-button active" data-tab="solicitar">📅 Solicitar Montagem</button>
             <button class="tab-button" data-tab="visualizar">👀 Visualizar Agendamentos</button>
             <button class="tab-button" data-tab="montador">👷 Montador</button>
             <button class="tab-button" data-tab="admin">⚙️ Administrador</button>
         </div>
 
-        <!-- TAB: Cadastrar-se (Caso de Uso 1) -->
-        <div id="tab-cadastro" class="tab-content active">
-            <h2>📝 Cadastrar-se</h2>
-            <p style="margin-bottom: 20px; color: #666;">Crie sua conta para agendar montagens</p>
-            
-            <form id="form-cadastro">
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label for="cadastro-nome">Nome Completo:</label>
-                        <input type="text" id="cadastro-nome" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="cadastro-email">Email:</label>
-                        <input type="email" id="cadastro-email" required>
-                    </div>
-                </div>
-                
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label for="cadastro-telefone">Telefone:</label>
-                        <input type="tel" id="cadastro-telefone" placeholder="11999999999">
-                    </div>
-                    <div class="form-group">
-                        <label for="cadastro-cpf">CPF:</label>
-                        <input type="text" id="cadastro-cpf" placeholder="12345678900">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="cadastro-cep">CEP:</label>
-                    <input type="text" id="cadastro-cep" placeholder="01310100">
-                </div>
-                
-                <button type="submit" class="btn btn-primary">Cadastrar</button>
-            </form>
-            
-            <div id="cadastro-result" class="result-box"></div>
-        </div>
-
-        <!-- TAB: Fazer Login (Caso de Uso 2) -->
-        <div id="tab-login" class="tab-content">
-            <h2>🔐 Fazer Login</h2>
-            <p style="margin-bottom: 20px; color: #666;">Acesse sua conta</p>
-            
-            <form id="form-login">
-                <div class="form-group">
-                    <label for="login-email">Email:</label>
-                    <input type="email" id="login-email" required>
-                </div>
-                
-                <button type="submit" class="btn btn-primary">Entrar</button>
-            </form>
-            
-            <div id="login-result" class="result-box"></div>
-        </div>
+        <!-- TAB: Cadastrar-se (Caso de Uso 1) - REMOVIDO -->
+        <!-- TAB: Fazer Login (Caso de Uso 2) - REMOVIDO -->
 
         <!-- TAB: Cadastrar Endereço (Caso de Uso - Include) -->
-        <div id="tab-endereco" class="tab-content">
+        <div id="tab-endereco" class="tab-content active">
             <h2>🏠 Cadastrar Endereço</h2>
             <p style="margin-bottom: 20px; color: #666;">Informe o endereço onde será realizada a montagem</p>
             
