@@ -517,30 +517,6 @@ function atualizarDisplayStatus(disponivel, ultimaAtualizacao) {
     }
 }
 
-// Carregar Serviços Adicionais
-async function carregarServicosAdicionais() {
-    try {
-        const response = await fetch(`${API_URL}/servicos`);
-        if (!response.ok) {
-            // Se não houver endpoint de listagem, pelo menos limpa o select
-            document.getElementById('montagem-servicos').innerHTML = '<option value="">Nenhum serviço disponível</option>';
-            return;
-        }
-        const servicos = await response.json();
-        
-        const select = document.getElementById('montagem-servicos');
-        if (servicos.length === 0) {
-            select.innerHTML = '<option value="">Nenhum serviço cadastrado</option>';
-        } else {
-            select.innerHTML = servicos.map(s => 
-                `<option value="${s.id}">${s.nome} - R$ ${s.valor_custo.toFixed(2)}</option>`
-            ).join('');
-        }
-    } catch (error) {
-        document.getElementById('montagem-servicos').innerHTML = '<option value="">Nenhum serviço disponível</option>';
-    }
-}
-
 // ==================== NAVEGAÇÃO ====================
 
 function switchTab(tabName) {
@@ -555,8 +531,6 @@ function switchTab(tabName) {
     // Carrega dados se necessário
     if (tabName === 'visualizar') {
         visualizarAgendamentos();
-    } else if (tabName === 'solicitar') {
-        carregarServicosAdicionais();
     } else if (tabName === 'montador' && currentUser && currentUser.tipo === 'montador') {
         verificarStatusDisponibilidade();
     }
