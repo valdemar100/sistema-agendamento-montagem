@@ -187,6 +187,11 @@ def sistema():
     """Página principal do sistema - Interface Web (requer login)"""
     return render_template('index.html')
 
+@app.route('/health')
+def health_check():
+    """Health check endpoint para Railway"""
+    return jsonify({'status': 'healthy', 'service': 'agendamento-montagem'}), 200
+
 
 # -----------------------------
 # Rotas (SOMENTE o que aparece nos diagramas de casos de uso)
@@ -693,5 +698,7 @@ def login_montador():
 # -----------------------------
 
 if __name__ == '__main__':
-    # use_reloader=False para evitar problemas no Windows
-    app.run(debug=True, use_reloader=False)
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') != 'production'
+    app.run(host='0.0.0.0', port=port, debug=debug)
