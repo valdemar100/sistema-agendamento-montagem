@@ -117,7 +117,15 @@ async function cadastrarUsuario(event) {
                 document.getElementById('cadastro-form').reset();
                 // Redirecionar para aba de login
                 setTimeout(() => {
-                    document.querySelector('.auth-tab-btn').click();
+                    // Encontrar o botão de Login especificamente
+                    const loginBtn = document.querySelector('.auth-tab-btn[onclick*="login"]') || 
+                                   document.querySelector('.auth-tab-btn');
+                    if (loginBtn) {
+                        loginBtn.click();
+                    } else {
+                        // Se não encontrou o botão, pelo menos recarrega a página
+                        window.location.reload();
+                    }
                 }, 1500);
             } else {
                 showResult('cadastro-result', `❌ ${data.erro || 'Não foi possível cadastrar'}`, false);
@@ -151,7 +159,15 @@ async function cadastrarUsuario(event) {
                 document.getElementById('cadastro-form').reset();
                 // Redirecionar para aba de login
                 setTimeout(() => {
-                    document.querySelector('.auth-tab-btn').click();
+                    // Encontrar o botão de Login especificamente
+                    const loginBtn = document.querySelector('.auth-tab-btn[onclick*="login"]') || 
+                                   document.querySelector('.auth-tab-btn');
+                    if (loginBtn) {
+                        loginBtn.click();
+                    } else {
+                        // Se não encontrou o botão, pelo menos recarrega a página
+                        window.location.reload();
+                    }
                 }, 1500);
             } else {
                 showResult('cadastro-result', `❌ ${data.erro || 'Não foi possível cadastrar'}`, false);
