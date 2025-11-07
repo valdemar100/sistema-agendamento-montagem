@@ -1,0 +1,23 @@
+# .railwayignore - Arquivos para ignorar no deploy Railway
+*.md
+APRESENTACAO.md
+COMO_TESTAR.md
+FRONTEND.md
+GITHUB.md
+README_ORIGINAL.md
+TESTES.md
+test_sistema.py
+teste_simples.py
+.git/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.DS_Store
+Thumbs.db

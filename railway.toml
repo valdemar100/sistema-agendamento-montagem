@@ -1,0 +1,13 @@
+# railway.toml - Configuração do Railway
+[build]
+builder = "dockerfile"
+
+[deploy]
+startCommand = "python main.py"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[environments.production]
+variables = {}

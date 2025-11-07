@@ -1,5 +1,5 @@
 // Configuração da API
-const API_URL = 'http://localhost:5000';
+const API_URL = window.location.origin; // Usa o domínio atual automaticamente
 
 // Estado global da aplicação
 let currentUser = null;

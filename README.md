@@ -41,7 +41,7 @@ Sistema web para gerenciar agendamentos de montagem de móveis, permitindo que c
 - Python 3.13 ou superior
 - pip
 
-### Passos
+### Instalação Local
 
 1. Clone o repositório:
 ```bash
@@ -63,6 +63,22 @@ python main.py
 ```
 http://localhost:5000
 ```
+
+### 🚀 Deploy no Railway
+
+Para hospedar na nuvem usando Railway:
+
+1. **Rápido**: Clique no botão abaixo para deploy automático
+   
+   [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/python)
+
+2. **Manual**: Siga o guia completo em [`RAILWAY_DEPLOY.md`](RAILWAY_DEPLOY.md)
+
+O projeto já está configurado com:
+- ✅ `Dockerfile` otimizado
+- ✅ `railway.toml` configurado
+- ✅ Variáveis de ambiente automáticas
+- ✅ Suporte a PostgreSQL e SQLite
 
 ## 🧪 Testes
 
