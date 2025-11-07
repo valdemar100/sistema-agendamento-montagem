@@ -186,7 +186,8 @@ async function solicitarMontagem(event) {
         return;
     }
 
-    // Pega texto dos serviços adicionais
+    // Pega descrição do móvel e serviços adicionais
+    const descricaoMovel = document.getElementById('montagem-movel').value.trim();
     const servicosAdicionais = document.getElementById('montagem-servicos').value.trim();
 
     const formData = {
@@ -194,6 +195,7 @@ async function solicitarMontagem(event) {
         endereco_id: currentEndereco,
         data_servico: document.getElementById('montagem-data').value,
         horario_inicio: document.getElementById('montagem-horario').value,
+        descricao_movel: descricaoMovel,
         servicos_adicionais: servicosAdicionais,
         itens: [{
             movel_id: 1, // Simplificado para MVP
@@ -250,6 +252,13 @@ async function visualizarAgendamentos() {
                 <p><strong>Horário:</strong> ${ag.horario_inicio}${ag.horario_fim ? ` - ${ag.horario_fim}` : ''}</p>
                 <p><strong>Status:</strong> ${getStatusBadge(ag.status)}</p>
                 <p><strong>Valor:</strong> R$ ${ag.valor_total.toFixed(2)}</p>
+                
+                ${ag.descricao_movel ? `
+                    <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 5px; border-left: 4px solid #ffc107;">
+                        <strong>🪑 Móvel para Montagem:</strong>
+                        <p style="margin: 5px 0 0 0; font-weight: 500;">${ag.descricao_movel}</p>
+                    </div>
+                ` : ''}
                 
                 ${ag.servicos_adicionais ? `
                     <div style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 5px; border-left: 4px solid #2196f3;">

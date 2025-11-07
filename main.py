@@ -133,6 +133,7 @@ class Agendamento(db.Model):
     horario_inicio = db.Column('Horario_Inicio', db.Time, nullable=False)
     horario_fim = db.Column('Horario_Fim', db.Time, nullable=True)
     status = db.Column('Status', db.String, default='Pendente')
+    descricao_movel = db.Column('Descricao_Movel', db.Text, nullable=True)  # Descrição do móvel a ser montado
     servicos_adicionais = db.Column('Servicos_Adicionais', db.Text, nullable=True)  # Serviços adicionais solicitados pelo cliente
     fotos_conclusao = db.Column('Fotos_Conclusao', db.Text, nullable=True)  # URLs das fotos separadas por vírgula
     observacoes_montagem = db.Column('Observacoes_Montagem', db.Text, nullable=True)  # Observações do montador
@@ -387,6 +388,7 @@ def solicitar_montagem():
         endereco_id=endereco.id,
         data_servico=data_servico,
         horario_inicio=horario_inicio,
+        descricao_movel=data.get('descricao_movel', '').strip() or None,
         servicos_adicionais=data.get('servicos_adicionais', '').strip() or None,
         status='Pendente'
     )
@@ -676,6 +678,7 @@ def visualizar_agendamentos():
             'horario_inicio': ag.horario_inicio.strftime('%H:%M'),
             'status': ag.status,
             'valor_total': ag.valor_total_servico,
+            'descricao_movel': ag.descricao_movel,
             'servicos_adicionais': ag.servicos_adicionais
         }
         
