@@ -486,12 +486,6 @@ def alterar_agendamento(agendamento_id):
             novo_horario = datetime.strptime(data['horario_inicio'], '%H:%M').time()
             agendamento.horario_inicio = novo_horario
         
-        if 'valor_total' in data:
-            novo_valor = float(data['valor_total'])
-            if novo_valor <= 0:
-                return jsonify({'erro': 'O valor deve ser maior que zero'}), 400
-            agendamento.valor_total = novo_valor
-        
         # Atualizar status para "Reagendado" se alterou data/horário
         if 'data_servico' in data or 'horario_inicio' in data:
             agendamento.status = 'Reagendado'
