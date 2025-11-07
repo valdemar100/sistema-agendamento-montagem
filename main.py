@@ -724,6 +724,36 @@ def login_montador():
 
 
 # -----------------------------
+# Endpoint temporário para limpar banco de dados
+# -----------------------------
+@app.route('/reset-database', methods=['POST'])
+def reset_database():
+    """CUIDADO: Deleta TODOS os dados do banco!"""
+    try:
+        # Deletar todas as tabelas na ordem correta (respeitando foreign keys)
+        db.session.query(ServicoContratado).delete()
+        db.session.query(ItemMontagem).delete()
+        db.session.query(Agendamento).delete()
+        db.session.query(EnderecoServico).delete()
+        db.session.query(ServicoAdicional).delete()
+        db.session.query(Movel).delete()
+        db.session.query(Montador).delete()
+        db.session.query(Cliente).delete()
+        db.session.commit()
+        
+        return jsonify({
+            'mensagem': 'Banco de dados limpo com sucesso! Todos os clientes e montadores foram removidos.',
+            'status': 'success'
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'erro': f'Erro ao limpar banco: {str(e)}',
+            'status': 'error'
+        }), 500
+
+
+# -----------------------------
 # Execução
 # -----------------------------
 
