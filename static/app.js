@@ -250,9 +250,34 @@ async function visualizarAgendamentos() {
             <div class="agendamento-card">
                 <h4>Agendamento #${ag.id}</h4>
                 <p><strong>Data:</strong> ${formatDate(ag.data_servico)}</p>
-                <p><strong>Horário:</strong> ${ag.horario_inicio}</p>
+                <p><strong>Horário:</strong> ${ag.horario_inicio}${ag.horario_fim ? ` - ${ag.horario_fim}` : ''}</p>
                 <p><strong>Status:</strong> ${getStatusBadge(ag.status)}</p>
                 <p><strong>Valor:</strong> R$ ${ag.valor_total.toFixed(2)}</p>
+                
+                ${ag.status === 'Concluído' && (ag.fotos && ag.fotos.length > 0 || ag.observacoes) ? `
+                    <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <h5 style="color: #28a745; margin-bottom: 10px;">📋 Relatório de Conclusão</h5>
+                        
+                        ${ag.observacoes ? `
+                            <div style="margin-bottom: 15px;">
+                                <strong>Observações do Montador:</strong>
+                                <p style="background: white; padding: 10px; border-radius: 5px; margin: 5px 0;">${ag.observacoes}</p>
+                            </div>
+                        ` : ''}
+                        
+                        ${ag.fotos && ag.fotos.length > 0 ? `
+                            <div>
+                                <strong>Fotos do Móvel Montado:</strong>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;">
+                                    ${ag.fotos.map(foto => `
+                                        <img src="${foto}" alt="Foto da montagem" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px; cursor: pointer; border: 2px solid #28a745;" onclick="window.open('${foto}', '_blank')">
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : ''}
+                
                 <div class="agendamento-actions" style="margin-top: 15px; display: flex; gap: 10px;">
                     ${ag.status === 'Agendado' || ag.status === 'Confirmado' ? 
                         `<button class="btn btn-warning" onclick="alterarAgendamento(${ag.id}, '${ag.data_servico}', '${ag.horario_inicio}', ${ag.valor_total})" style="background: #f39c12; border: none;">✏️ Alterar</button>` : ''}
@@ -381,17 +406,28 @@ async function registrarConclusao(event) {
     
     const agendamentoId = document.getElementById('conclusao-id').value;
     const horarioFim = document.getElementById('conclusao-horario').value;
+    const fotos = document.getElementById('conclusao-fotos').files;
+    const observacoes = document.getElementById('conclusao-observacoes').value;
 
     try {
+        // Criar FormData para enviar arquivos
+        const formData = new FormData();
+        formData.append('horario_fim', horarioFim);
+        formData.append('observacoes', observacoes);
+        
+        // Adicionar fotos ao FormData
+        for (let i = 0; i < fotos.length; i++) {
+            formData.append('fotos', fotos[i]);
+        }
+
         const response = await fetch(`${API_URL}/agendamentos/${agendamentoId}/registrar_conclusao`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ horario_fim: horarioFim })
+            body: formData
         });
         const data = await response.json();
         
         if (response.ok) {
-            showResult('montador-result', `✅ Montagem #${data.id} marcada como ${data.status}!`, true);
+            showResult('montador-result', `✅ Montagem #${data.id} marcada como ${data.status}! Fotos e observações enviadas ao cliente.`, true);
             document.getElementById('form-conclusao').reset();
         } else {
             showResult('montador-result', `❌ Erro: ${data.erro}`, false);

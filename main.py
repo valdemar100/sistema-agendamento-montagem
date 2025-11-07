@@ -5,13 +5,27 @@ Nada mais, nada menos.
 """
 
 from datetime import datetime, time, date
-from flask import Flask, request, jsonify, abort, render_template
+from flask import Flask, request, jsonify, abort, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///agendamento.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+# Criar pasta de uploads se não existir
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+def allowed_file(filename):
+    """Verifica se a extensão do arquivo é permitida"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 db = SQLAlchemy(app)
 CORS(app)  # Permite requisições do front-end
 
@@ -119,6 +133,8 @@ class Agendamento(db.Model):
     horario_inicio = db.Column('Horario_Inicio', db.Time, nullable=False)
     horario_fim = db.Column('Horario_Fim', db.Time, nullable=True)
     status = db.Column('Status', db.String, default='Pendente')
+    fotos_conclusao = db.Column('Fotos_Conclusao', db.Text, nullable=True)  # URLs das fotos separadas por vírgula
+    observacoes_montagem = db.Column('Observacoes_Montagem', db.Text, nullable=True)  # Observações do montador
 
     endereco = db.relationship('EnderecoServico', backref='agendamentos')
     itens = db.relationship('ItemMontagem', backref='agendamento', lazy=True)
@@ -502,17 +518,44 @@ def alterar_agendamento(agendamento_id):
 @app.route('/agendamentos/<int:agendamento_id>/registrar_conclusao', methods=['POST'])
 def registrar_montagem_concluida(agendamento_id):
     """Registrar montagem concluída - caso de uso do diagrama
-    Campos: horario_fim
+    Campos: horario_fim, fotos, observacoes
     """
     agendamento = Agendamento.query.get_or_404(agendamento_id)
-    data = request.json
     
+    # Processar horário de fim
     try:
-        if data.get('horario_fim'):
-            horario_fim = datetime.strptime(data.get('horario_fim'), '%H:%M').time()
+        if request.form.get('horario_fim'):
+            horario_fim = datetime.strptime(request.form.get('horario_fim'), '%H:%M').time()
             agendamento.horario_fim = horario_fim
     except Exception:
         return jsonify({'erro': 'Formato de horário inválido'}), 400
+    
+    # Processar observações
+    if request.form.get('observacoes'):
+        agendamento.observacoes_montagem = request.form.get('observacoes')
+    
+    # Processar fotos
+    fotos_urls = []
+    if 'fotos' in request.files:
+        fotos = request.files.getlist('fotos')
+        for foto in fotos:
+            if foto and foto.filename != '' and allowed_file(foto.filename):
+                # Gerar nome único para o arquivo
+                filename = secure_filename(foto.filename)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                unique_filename = f"{agendamento_id}_{timestamp}_{filename}"
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+                
+                try:
+                    foto.save(filepath)
+                    foto_url = f"/static/uploads/{unique_filename}"
+                    fotos_urls.append(foto_url)
+                except Exception as e:
+                    return jsonify({'erro': f'Erro ao salvar foto: {str(e)}'}), 500
+    
+    # Salvar URLs das fotos (separadas por vírgula)
+    if fotos_urls:
+        agendamento.fotos_conclusao = ','.join(fotos_urls)
     
     agendamento.status = 'Concluído'
     db.session.commit()
@@ -520,7 +563,9 @@ def registrar_montagem_concluida(agendamento_id):
     return jsonify({
         'id': agendamento.id,
         'status': agendamento.status,
-        'horario_fim': agendamento.horario_fim.strftime('%H:%M') if agendamento.horario_fim else None
+        'horario_fim': agendamento.horario_fim.strftime('%H:%M') if agendamento.horario_fim else None,
+        'observacoes': agendamento.observacoes_montagem,
+        'fotos': fotos_urls
     })
 
 
@@ -627,7 +672,7 @@ def visualizar_agendamentos():
     agendamentos = q.all()
     result = []
     for ag in agendamentos:
-        result.append({
+        agendamento_data = {
             'id': ag.id,
             'cliente_id': ag.cliente_id,
             'montador_id': ag.montador_id,
@@ -635,7 +680,15 @@ def visualizar_agendamentos():
             'horario_inicio': ag.horario_inicio.strftime('%H:%M'),
             'status': ag.status,
             'valor_total': ag.valor_total_servico
-        })
+        }
+        
+        # Incluir fotos e observações se estiver concluído
+        if ag.status == 'Concluído':
+            agendamento_data['horario_fim'] = ag.horario_fim.strftime('%H:%M') if ag.horario_fim else None
+            agendamento_data['observacoes'] = ag.observacoes_montagem
+            agendamento_data['fotos'] = ag.fotos_conclusao.split(',') if ag.fotos_conclusao else []
+        
+        result.append(agendamento_data)
     
     return jsonify(result)
 

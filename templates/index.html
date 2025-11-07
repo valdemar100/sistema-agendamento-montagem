@@ -153,7 +153,7 @@
             <hr style="margin: 30px 0;">
             
             <h3>✅ Registrar Montagem Concluída</h3>
-            <form id="form-conclusao">
+            <form id="form-conclusao" enctype="multipart/form-data">
                 <div class="grid-2">
                     <div class="form-group">
                         <label for="conclusao-id">ID do Agendamento:</label>
@@ -165,7 +165,18 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="btn btn-success">Marcar como Concluído</button>
+                <div class="form-group">
+                    <label for="conclusao-fotos">📸 Fotos do Móvel Montado:</label>
+                    <input type="file" id="conclusao-fotos" multiple accept="image/*">
+                    <small>Selecione uma ou mais fotos do móvel montado (formatos: JPG, PNG, WebP)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="conclusao-observacoes">📝 Observações sobre a Montagem:</label>
+                    <textarea id="conclusao-observacoes" rows="4" placeholder="Descreva detalhes sobre a montagem, dificuldades encontradas, qualidade do material, etc..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Marcar como Concluído e Enviar para Cliente</button>
             </form>
             
             <div id="montador-result" class="result-box"></div>

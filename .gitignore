@@ -28,6 +28,10 @@ wheels/
 *.sqlite
 *.sqlite3
 
+# Upload de fotos (não fazer commit das fotos dos usuários)
+static/uploads/*
+!static/uploads/.gitkeep
+
 # IDEs
 .vscode/
 .idea/
