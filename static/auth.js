@@ -107,16 +107,12 @@ async function cadastrarUsuario(event) {
             const data = await response.json();
             
             if (response.ok) {
-                showResult('cadastro-result', '✅ Cliente cadastrado com sucesso!', true);
-                // Salvar dados e redirecionar
-                localStorage.setItem('user', JSON.stringify({
-                    id: data.id,
-                    nome: data.nome,
-                    email: data.email,
-                    tipo: 'cliente'
-                }));
+                showResult('cadastro-result', '✅ Cliente cadastrado com sucesso! Faça login para continuar.', true);
+                // Limpar formulário
+                document.getElementById('cadastro-form').reset();
+                // Redirecionar para aba de login
                 setTimeout(() => {
-                    window.location.href = '/sistema';
+                    document.querySelector('.auth-tab-btn').click();
                 }, 1500);
             } else {
                 showResult('cadastro-result', `❌ Erro: ${data.erro || 'Não foi possível cadastrar'}`, false);
@@ -143,16 +139,12 @@ async function cadastrarUsuario(event) {
             const data = await response.json();
             
             if (response.ok) {
-                showResult('cadastro-result', '✅ Montador cadastrado com sucesso!', true);
-                // Salvar dados e redirecionar
-                localStorage.setItem('user', JSON.stringify({
-                    id: data.id,
-                    nome: data.nome,
-                    email: email,
-                    tipo: 'montador'
-                }));
+                showResult('cadastro-result', '✅ Montador cadastrado com sucesso! Faça login para continuar.', true);
+                // Limpar formulário
+                document.getElementById('cadastro-form').reset();
+                // Redirecionar para aba de login
                 setTimeout(() => {
-                    window.location.href = '/sistema';
+                    document.querySelector('.auth-tab-btn').click();
                 }, 1500);
             } else {
                 showResult('cadastro-result', `❌ Erro: ${data.erro || 'Não foi possível cadastrar'}`, false);
