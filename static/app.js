@@ -279,7 +279,7 @@ async function visualizarAgendamentos() {
                 ` : ''}
                 
                 <div class="agendamento-actions" style="margin-top: 15px; display: flex; gap: 10px;">
-                    ${ag.status === 'Agendado' || ag.status === 'Confirmado' ? 
+                    ${ag.status === 'Pendente' || ag.status === 'Agendado' || ag.status === 'Confirmado' ? 
                         `<button class="btn btn-warning" onclick="alterarAgendamento(${ag.id}, '${ag.data_servico}', '${ag.horario_inicio}', ${ag.valor_total})" style="background: #f39c12; border: none;">✏️ Alterar</button>` : ''}
                     ${ag.status !== 'Cancelado' && ag.status !== 'Concluído' ? 
                         `<button class="btn btn-danger" onclick="cancelarAgendamento(${ag.id})" style="background: #e74c3c; border: none;">❌ Cancelar</button>` : ''}
