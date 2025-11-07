@@ -63,10 +63,13 @@ async function cadastrarUsuario(event) {
     event.preventDefault();
     
     const tipoUsuario = document.querySelector('input[name="tipo_usuario"]:checked').value;
-    const nome = document.getElementById('cadastro-nome').value;
-    const email = document.getElementById('cadastro-email').value;
+    const nome = document.getElementById('cadastro-nome').value.trim();
+    const email = document.getElementById('cadastro-email').value.trim();
     const senha = document.getElementById('cadastro-senha').value;
-    const telefone = document.getElementById('cadastro-telefone').value;
+    const telefone = document.getElementById('cadastro-telefone').value.trim();
+    
+    // Debug: mostrar o que está sendo enviado
+    console.log('Tentando cadastrar:', { nome, email, telefone, tipoUsuario });
     
     // Validar campos obrigatórios
     if (!tipoUsuario || !nome || !email || !senha || !telefone) {
@@ -106,6 +109,8 @@ async function cadastrarUsuario(event) {
             
             const data = await response.json();
             
+            console.log('Resposta do servidor:', response.status, data);
+            
             if (response.ok) {
                 showResult('cadastro-result', '✅ Cliente cadastrado com sucesso! Faça login para continuar.', true);
                 // Limpar formulário
@@ -115,7 +120,7 @@ async function cadastrarUsuario(event) {
                     document.querySelector('.auth-tab-btn').click();
                 }, 1500);
             } else {
-                showResult('cadastro-result', `❌ Erro: ${data.erro || 'Não foi possível cadastrar'}`, false);
+                showResult('cadastro-result', `❌ ${data.erro || 'Não foi possível cadastrar'}`, false);
             }
             
         } else {
@@ -138,6 +143,8 @@ async function cadastrarUsuario(event) {
             
             const data = await response.json();
             
+            console.log('Resposta do servidor (Montador):', response.status, data);
+            
             if (response.ok) {
                 showResult('cadastro-result', '✅ Montador cadastrado com sucesso! Faça login para continuar.', true);
                 // Limpar formulário
@@ -147,7 +154,7 @@ async function cadastrarUsuario(event) {
                     document.querySelector('.auth-tab-btn').click();
                 }, 1500);
             } else {
-                showResult('cadastro-result', `❌ Erro: ${data.erro || 'Não foi possível cadastrar'}`, false);
+                showResult('cadastro-result', `❌ ${data.erro || 'Não foi possível cadastrar'}`, false);
             }
         }
         
