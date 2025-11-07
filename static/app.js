@@ -342,29 +342,6 @@ async function registrarConclusao(event) {
     }
 }
 
-// ==================== ADMINISTRADOR ====================
-
-// Gerar Relatórios
-async function gerarRelatorios() {
-    try {
-        const response = await fetch(`${API_URL}/relatorios`);
-        const data = await response.json();
-        
-        const container = document.getElementById('relatorios-content');
-        container.innerHTML = `
-            <h3>📊 Relatório de Agendamentos</h3>
-            ${Object.entries(data).map(([status, count]) => `
-                <div class="agendamento-card">
-                    <p><strong>${status}:</strong> ${count} agendamento(s)</p>
-                </div>
-            `).join('')}
-        `;
-        
-    } catch (error) {
-        showResult('admin-result', `❌ Erro: ${error.message}`, false);
-    }
-}
-
 // Carregar Serviços Adicionais
 async function carregarServicosAdicionais() {
     try {
@@ -389,36 +366,6 @@ async function carregarServicosAdicionais() {
     }
 }
 
-// Cadastrar Serviço Adicional (Administrador)
-async function cadastrarServico(event) {
-    event.preventDefault();
-    
-    const formData = {
-        nome: document.getElementById('servico-nome').value,
-        valor_custo: parseFloat(document.getElementById('servico-valor').value),
-        tempo_adicional: parseInt(document.getElementById('servico-tempo').value) || 0
-    };
-
-    try {
-        const response = await fetch(`${API_URL}/servicos`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
-        const data = await response.json();
-        
-        if (response.ok) {
-            showResult('admin-result', `✅ Serviço "${formData.nome}" cadastrado com sucesso! ID: ${data.id}`, true);
-            document.getElementById('form-servico').reset();
-            carregarServicosAdicionais(); // Atualiza a lista
-        } else {
-            showResult('admin-result', `❌ Erro ao cadastrar serviço`, false);
-        }
-    } catch (error) {
-        showResult('admin-result', `❌ Erro: ${error.message}`, false);
-    }
-}
-
 // ==================== NAVEGAÇÃO ====================
 
 function switchTab(tabName) {
@@ -433,8 +380,6 @@ function switchTab(tabName) {
     // Carrega dados se necessário
     if (tabName === 'visualizar') {
         visualizarAgendamentos();
-    } else if (tabName === 'admin') {
-        gerarRelatorios();
     } else if (tabName === 'solicitar') {
         carregarServicosAdicionais();
     }

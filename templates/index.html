@@ -23,7 +23,6 @@
             <button class="tab-button active" data-tab="solicitar">📅 Solicitar Montagem</button>
             <button class="tab-button" data-tab="visualizar">👀 Visualizar Agendamentos</button>
             <button class="tab-button" data-tab="montador">👷 Montador</button>
-            <button class="tab-button" data-tab="admin">⚙️ Administrador</button>
         </div>
 
         <!-- TAB: Cadastrar-se (Caso de Uso 1) - REMOVIDO -->
@@ -154,42 +153,6 @@
             </form>
             
             <div id="montador-result" class="result-box"></div>
-        </div>
-
-        <!-- TAB: Administrador -->
-        <div id="tab-admin" class="tab-content">
-            <h2>⚙️ Área do Administrador</h2>
-            <p style="margin-bottom: 20px; color: #666;">Relatórios e gerenciamento do sistema</p>
-            
-            <h3>📊 Relatórios</h3>
-            <button class="btn btn-primary" onclick="gerarRelatorios()">📊 Gerar Relatórios</button>
-            
-            <div id="relatorios-content" style="margin-top: 20px;">
-                <p>Clique em "Gerar Relatórios" para visualizar estatísticas.</p>
-            </div>
-            
-            <hr style="margin: 30px 0;">
-            
-            <h3>➕ Cadastrar Serviço Adicional</h3>
-            <form id="form-servico" onsubmit="cadastrarServico(event)">
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label for="servico-nome">Nome do Serviço:</label>
-                        <input type="text" id="servico-nome" required placeholder="Ex: Instalação de suporte para TV">
-                    </div>
-                    <div class="form-group">
-                        <label for="servico-valor">Valor (R$):</label>
-                        <input type="number" id="servico-valor" step="0.01" required placeholder="150.00">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="servico-tempo">Tempo Adicional (minutos):</label>
-                    <input type="number" id="servico-tempo" placeholder="30">
-                </div>
-                <button type="submit" class="btn btn-success">Cadastrar Serviço</button>
-            </form>
-            
-            <div id="admin-result" class="result-box"></div>
         </div>
     </div>
 
