@@ -4,7 +4,26 @@ Sistema completo de agendamento de montagem de móveis desenvolvido com base em 
 
 ## 🎯 Sobre o Projeto
 
-Sistema web para gerenciar agendamentos de montagem de móveis, permitindo que clientes solicitem montagens, montadores registrem conclusões e administradores gerem relatórios.
+Sistema web para gerenciar agendamentos de montagem de móveis, permitindo que clientes solicitem montagens, montadores registrem conclusões com fotos e observações, e administradores gerem relatórios.
+
+## ✨ Funcionalidades Principais
+
+### Para Clientes:
+- 📝 **Cadastro e Login** com email e senha
+- 🏠 **Cadastro de Endereços** de serviço
+- 📅 **Solicitação de Montagem** com data, horário e serviços
+- 👁️ **Visualização de Agendamentos** com histórico completo
+- ✏️ **Alteração de Agendamentos** (data/horário)
+- ❌ **Cancelamento de Agendamentos**
+- 📸 **Visualização de Fotos** e relatórios de montagem concluída
+
+### Para Montadores:
+- 🔐 **Cadastro e Login** especializado
+- ✅ **Confirmação de Disponibilidade** para trabalho
+- 📋 **Registro de Conclusão** de montagem
+- 📸 **Upload de Fotos** do móvel montado
+- 📝 **Observações** sobre a montagem (qualidade, dificuldades, etc.)
+- 📤 **Envio Automático** de relatório para o cliente
 
 ## 🚀 Tecnologias
 
@@ -13,27 +32,33 @@ Sistema web para gerenciar agendamentos de montagem de móveis, permitindo que c
 - **Banco de Dados:** SQLite
 - **Arquitetura:** REST API + SPA
 
-## 📋 Funcionalidades
+## 📋 Funcionalidades Implementadas
 
 ### Cliente
-- ✅ Cadastro de usuário
-- ✅ Login
-- ✅ Cadastro de endereço
-- ✅ Solicitação de montagem
-- ✅ Visualização de agendamentos
+- ✅ Cadastro de usuário com senha
+- ✅ Login seguro
+- ✅ Cadastro de endereços de serviço
+- ✅ Solicitação de montagem com data/horário
+- ✅ Visualização completa de agendamentos
+- ✅ Alteração de agendamentos pendentes
 - ✅ Cancelamento de agendamentos
 - ✅ Seleção de serviços adicionais
+- ✅ **Visualização de fotos e relatórios** de montagem concluída
 
 ### Montador
-- ✅ Confirmação de disponibilidade
+- ✅ Cadastro e login especializado
+- ✅ **Confirmação de disponibilidade** para trabalho
 - ✅ Registro de montagem concluída
-- ✅ Visualização de agendamentos
+- ✅ **Upload de fotos** do móvel montado
+- ✅ **Observações detalhadas** sobre a montagem
+- ✅ **Envio automático** de relatório completo ao cliente
+- ✅ Visualização de agendamentos atribuídos
 
-### Administrador
-- ✅ Atribuição de montadores
-- ✅ Cadastro de serviços adicionais
-- ✅ Geração de relatórios
-- ✅ Gerenciamento de usuários
+### Administrador (preparado para implementação futura)
+- 🔄 Atribuição de montadores disponíveis
+- 🔄 Cadastro de serviços adicionais
+- 🔄 Geração de relatórios
+- 🔄 Gerenciamento de usuários
 
 ## 🔧 Instalação
 
@@ -147,11 +172,12 @@ O sistema possui uma interface web moderna e responsiva com:
 - `POST /enderecos` - Cadastrar endereço
 - `POST /solicitar_montagem` - Solicitar montagem
 - `GET /agendamentos/<id>/status` - Visualizar agendamento
+- `PUT /agendamentos/<id>` - Alterar agendamento
 - `POST /agendamentos/<id>/cancelar` - Cancelar agendamento
 
 ### Montador
 - `POST /montadores/<id>/confirmar_disponibilidade` - Confirmar disponibilidade
-- `POST /agendamentos/<id>/registrar_conclusao` - Registrar conclusão
+- `POST /agendamentos/<id>/registrar_conclusao` - **Registrar conclusão com fotos e observações**
 
 ### Administrador
 - `POST /agendamentos/<id>/atribuir_montador` - Atribuir montador
@@ -159,6 +185,26 @@ O sistema possui uma interface web moderna e responsiva com:
 - `GET /servicos` - Listar serviços
 - `GET /relatorios` - Gerar relatórios
 - `GET /clientes` - Listar clientes
+
+## 📸 Sistema de Fotos e Relatórios
+
+### Upload de Fotos
+- **Formatos aceitos:** JPG, PNG, WebP, GIF
+- **Tamanho máximo:** 16MB por arquivo
+- **Múltiplos arquivos:** Suporte a várias fotos por montagem
+- **Armazenamento:** Pasta `static/uploads/` (não commitada no Git por privacidade)
+
+### Relatório de Conclusão
+- **Observações:** Campo de texto livre para detalhes da montagem
+- **Fotos:** Galeria visual com zoom e visualização em tela cheia
+- **Exibição:** Integrada na visualização de agendamentos do cliente
+- **Design:** Interface elegante com destaque visual
+
+### Fluxo Completo
+1. **Montador:** Marca montagem como concluída
+2. **Upload:** Adiciona fotos e observações
+3. **Processamento:** Sistema salva arquivos e dados
+4. **Cliente:** Visualiza automaticamente o relatório completo
 
 ## 👥 Autores
 
