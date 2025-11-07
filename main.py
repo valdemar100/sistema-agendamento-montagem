@@ -337,6 +337,30 @@ def informar_endereco(endereco_id):
     })
 
 
+# 5.1) Listar endereços do cliente
+@app.route('/enderecos', methods=['GET'])
+def listar_enderecos():
+    """Listar endereços de um cliente - para select de endereços"""
+    cliente_id = request.args.get('cliente_id')
+    if not cliente_id:
+        return jsonify({'erro': 'cliente_id é obrigatório'}), 400
+    
+    enderecos = EnderecoServico.query.filter_by(cliente_id=int(cliente_id)).all()
+    result = []
+    for endereco in enderecos:
+        result.append({
+            'id': endereco.id,
+            'rua': endereco.rua,
+            'numero': endereco.numero,
+            'bairro': endereco.bairro,
+            'cidade': endereco.cidade,
+            'cep': endereco.cep,
+            'endereco_completo': f"{endereco.rua}, {endereco.numero} - {endereco.bairro}, {endereco.cidade}"
+        })
+    
+    return jsonify(result)
+
+
 # 6) Selecionar data e horário (include de "Solicitar montagem")
 # Este é parte do processo de solicitar montagem
 

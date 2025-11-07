@@ -180,9 +180,11 @@ async function solicitarMontagem(event) {
         showResult('montagem-result', '❌ Faça login primeiro!', false);
         return;
     }
-    
-    if (!currentEndereco) {
-        showResult('montagem-result', '❌ Cadastre um endereço primeiro!', false);
+
+    // Pega endereço selecionado
+    const enderecoSelecionado = document.getElementById('montagem-endereco').value;
+    if (!enderecoSelecionado) {
+        showResult('montagem-result', '❌ Selecione um endereço para o serviço!', false);
         return;
     }
 
@@ -192,7 +194,7 @@ async function solicitarMontagem(event) {
 
     const formData = {
         cliente_id: currentUser.id,
-        endereco_id: currentEndereco,
+        endereco_id: parseInt(enderecoSelecionado),
         data_servico: document.getElementById('montagem-data').value,
         horario_inicio: document.getElementById('montagem-horario').value,
         descricao_movel: descricaoMovel,
@@ -526,6 +528,34 @@ function atualizarDisplayStatus(disponivel, ultimaAtualizacao) {
     }
 }
 
+// Carregar endereços do cliente no select
+async function carregarEnderecosCliente() {
+    if (!currentUser) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/enderecos?cliente_id=${currentUser.id}`);
+        const enderecos = await response.json();
+        
+        const select = document.getElementById('montagem-endereco');
+        select.innerHTML = '<option value="">Selecione um endereço cadastrado</option>';
+        
+        if (enderecos.length === 0) {
+            select.innerHTML += '<option value="" disabled>Nenhum endereço cadastrado - Cadastre um primeiro</option>';
+        } else {
+            enderecos.forEach(endereco => {
+                const option = document.createElement('option');
+                option.value = endereco.id;
+                option.textContent = `${endereco.rua}, ${endereco.numero} - ${endereco.bairro}, ${endereco.cidade}`;
+                select.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao carregar endereços:', error);
+        const select = document.getElementById('montagem-endereco');
+        select.innerHTML = '<option value="">Erro ao carregar endereços</option>';
+    }
+}
+
 // ==================== NAVEGAÇÃO ====================
 
 function switchTab(tabName) {
@@ -540,6 +570,8 @@ function switchTab(tabName) {
     // Carrega dados se necessário
     if (tabName === 'visualizar') {
         visualizarAgendamentos();
+    } else if (tabName === 'solicitar') {
+        carregarEnderecosCliente();
     } else if (tabName === 'montador' && currentUser && currentUser.tipo === 'montador') {
         verificarStatusDisponibilidade();
     }
