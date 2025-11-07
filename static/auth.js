@@ -1,5 +1,8 @@
 // Configuração da API
-const API_URL = 'http://localhost:5000';
+// Detecta automaticamente se está em produção ou desenvolvimento
+const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:5000' 
+    : window.location.origin;
 
 // Mostrar/Esconder abas de autenticação
 function showAuthTab(tab) {
