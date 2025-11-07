@@ -702,6 +702,13 @@ def visualizar_agendamentos():
             'horario_inicio': ag.horario_inicio.strftime('%H:%M'),
             'status': ag.status,
             'valor_total': ag.valor_total_servico,
+            'endereco': {
+                'rua': ag.endereco.rua,
+                'numero': ag.endereco.numero,
+                'bairro': ag.endereco.bairro,
+                'cidade': ag.endereco.cidade,
+                'endereco_completo': f"{ag.endereco.rua}, {ag.endereco.numero} - {ag.endereco.bairro}, {ag.endereco.cidade}"
+            } if ag.endereco else None,
             'descricao_movel': ag.descricao_movel,
             'servicos_adicionais': ag.servicos_adicionais
         }

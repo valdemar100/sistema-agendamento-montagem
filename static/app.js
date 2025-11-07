@@ -255,6 +255,13 @@ async function visualizarAgendamentos() {
                 <p><strong>Status:</strong> ${getStatusBadge(ag.status)}</p>
                 <p><strong>Valor:</strong> R$ ${ag.valor_total.toFixed(2)}</p>
                 
+                ${ag.endereco ? `
+                    <div style="margin-top: 10px; padding: 10px; background: #f0f8ff; border-radius: 5px; border-left: 4px solid #007bff;">
+                        <strong>📍 Endereço:</strong>
+                        <p style="margin: 5px 0 0 0;">${ag.endereco.endereco_completo}</p>
+                    </div>
+                ` : ''}
+                
                 ${ag.descricao_movel ? `
                     <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 5px; border-left: 4px solid #ffc107;">
                         <strong>🪑 Móvel para Montagem:</strong>
