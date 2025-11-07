@@ -218,9 +218,12 @@ def cadastrar_cliente():
     if len(data['senha']) < 6:
         return jsonify({'erro': 'A senha deve ter no mínimo 6 caracteres'}), 400
     
-    # Verificar se email já existe
+    # Verificar se email já existe em Cliente OU Montador
     if Cliente.query.filter_by(email=data['email']).first():
-        return jsonify({'erro': 'Este email já está cadastrado'}), 400
+        return jsonify({'erro': 'Este email já está cadastrado como Cliente'}), 400
+    
+    if Montador.query.filter_by(email=data['email']).first():
+        return jsonify({'erro': 'Este email já está cadastrado como Montador'}), 400
     
     try:
         cliente = Cliente(
@@ -668,9 +671,12 @@ def cadastrar_montador():
     if len(data['senha']) < 6:
         return jsonify({'erro': 'A senha deve ter no mínimo 6 caracteres'}), 400
     
-    # Verificar se email já está cadastrado
+    # Verificar se email já está cadastrado em Cliente OU Montador
+    if Cliente.query.filter_by(email=data['email']).first():
+        return jsonify({'erro': 'Este email já está cadastrado como Cliente'}), 400
+    
     if Montador.query.filter_by(email=data['email']).first():
-        return jsonify({'erro': 'Este email já está cadastrado'}), 400
+        return jsonify({'erro': 'Este email já está cadastrado como Montador'}), 400
     
     try:
         montador = Montador(
