@@ -133,6 +133,7 @@ class Agendamento(db.Model):
     horario_inicio = db.Column('Horario_Inicio', db.Time, nullable=False)
     horario_fim = db.Column('Horario_Fim', db.Time, nullable=True)
     status = db.Column('Status', db.String, default='Pendente')
+    servicos_adicionais = db.Column('Servicos_Adicionais', db.Text, nullable=True)  # Serviços adicionais solicitados pelo cliente
     fotos_conclusao = db.Column('Fotos_Conclusao', db.Text, nullable=True)  # URLs das fotos separadas por vírgula
     observacoes_montagem = db.Column('Observacoes_Montagem', db.Text, nullable=True)  # Observações do montador
 
@@ -386,6 +387,7 @@ def solicitar_montagem():
         endereco_id=endereco.id,
         data_servico=data_servico,
         horario_inicio=horario_inicio,
+        servicos_adicionais=data.get('servicos_adicionais', '').strip() or None,
         status='Pendente'
     )
     db.session.add(agendamento)
@@ -673,7 +675,8 @@ def visualizar_agendamentos():
             'data_servico': ag.data_servico.isoformat(),
             'horario_inicio': ag.horario_inicio.strftime('%H:%M'),
             'status': ag.status,
-            'valor_total': ag.valor_total_servico
+            'valor_total': ag.valor_total_servico,
+            'servicos_adicionais': ag.servicos_adicionais
         }
         
         # Incluir fotos e observações se estiver concluído

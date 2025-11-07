@@ -186,23 +186,20 @@ async function solicitarMontagem(event) {
         return;
     }
 
-    // Pega serviços selecionados
-    const selectServicos = document.getElementById('montagem-servicos');
-    const servicosSelecionados = Array.from(selectServicos.selectedOptions)
-        .map(opt => parseInt(opt.value))
-        .filter(val => !isNaN(val));
+    // Pega texto dos serviços adicionais
+    const servicosAdicionais = document.getElementById('montagem-servicos').value.trim();
 
     const formData = {
         cliente_id: currentUser.id,
         endereco_id: currentEndereco,
         data_servico: document.getElementById('montagem-data').value,
         horario_inicio: document.getElementById('montagem-horario').value,
+        servicos_adicionais: servicosAdicionais,
         itens: [{
             movel_id: 1, // Simplificado para MVP
             quantidade: 1,
             movel_preco: 0.00 // Valor será definido pelo sistema/administrador
-        }],
-        servicos: servicosSelecionados
+        }]
     };
 
     try {
@@ -219,7 +216,7 @@ async function solicitarMontagem(event) {
                     `✅ ${data.mensagem}\nAgendamento ID: ${data.agendamentoId}\nStatus: ${data.status}`, true);
             }
             document.getElementById('form-montagem').reset();
-            carregarServicosAdicionais(); // Recarrega a lista
+            // Não precisa mais recarregar lista de serviços
         } else {
             showResult('montagem-result', `❌ ${data.mensagem || 'Horário não disponível'}`, false);
         }
@@ -253,6 +250,13 @@ async function visualizarAgendamentos() {
                 <p><strong>Horário:</strong> ${ag.horario_inicio}${ag.horario_fim ? ` - ${ag.horario_fim}` : ''}</p>
                 <p><strong>Status:</strong> ${getStatusBadge(ag.status)}</p>
                 <p><strong>Valor:</strong> R$ ${ag.valor_total.toFixed(2)}</p>
+                
+                ${ag.servicos_adicionais ? `
+                    <div style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 5px; border-left: 4px solid #2196f3;">
+                        <strong>🔧 Serviços Adicionais Solicitados:</strong>
+                        <p style="margin: 5px 0 0 0; font-style: italic;">${ag.servicos_adicionais}</p>
+                    </div>
+                ` : ''}
                 
                 ${ag.status === 'Concluído' && (ag.fotos && ag.fotos.length > 0 || ag.observacoes) ? `
                     <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
@@ -595,5 +599,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     updateUserInfo();
-    carregarServicosAdicionais(); // Carrega serviços ao iniciar
+    // Não precisa mais carregar serviços ao iniciar
 });
