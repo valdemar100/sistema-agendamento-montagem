@@ -929,6 +929,134 @@ def reset_database():
 
 
 # -----------------------------
+# Rotas para área administrativa
+# -----------------------------
+@app.route('/admin/')
+def admin_index():
+    """Página principal da área administrativa"""
+    return render_template('admin/index.html')
+
+@app.route('/admin/login')
+def admin_login():
+    """Página de login da área administrativa"""
+    return render_template('admin/login.html')
+
+@app.route('/montadores', methods=['GET'])
+def listar_montadores():
+    """Listar todos os montadores cadastrados"""
+    try:
+        montadores = Montador.query.all()
+        result = []
+        
+        for m in montadores:
+            # Verificar disponibilidade
+            disponivel = m.estaDisponivel()
+            
+            result.append({
+                'id': m.id,
+                'nome': m.nome,
+                'email': m.email,
+                'regiao': m.regiao,
+                'especialidade': m.especialidade,
+                'disponivel': disponivel
+            })
+        
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
+@app.route('/todos_agendamentos', methods=['GET'])
+def listar_todos_agendamentos():
+    """Listar todos os agendamentos para relatórios administrativos"""
+    try:
+        agendamentos = Agendamento.query.order_by(Agendamento.data_criacao.desc()).all()
+        result = []
+        
+        for a in agendamentos:
+            result.append({
+                'id': a.id,
+                'cliente_id': a.cliente_id,
+                'montador_id': a.montador_id,
+                'data_servico': a.data_servico.isoformat() if a.data_servico else None,
+                'status': a.status,
+                'data_criacao': a.data_criacao.isoformat() if a.data_criacao else None,
+                'endereco': a.endereco,
+                'descricao_movel': a.descricao_movel,
+                'servicos_adicionais': a.servicos_adicionais,
+                'observacoes': a.observacoes
+            })
+        
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
+@app.route('/agendamentos/<int:agendamento_id>/atribuir_montador', methods=['POST'])
+def atribuir_montador_agendamento(agendamento_id):
+    """Atribuir montador a um agendamento (funcionalidade administrativa)"""
+    data = request.json
+    
+    if not data or 'montador_id' not in data:
+        return jsonify({'erro': 'montador_id é obrigatório'}), 400
+    
+    try:
+        agendamento = Agendamento.query.get(agendamento_id)
+        if not agendamento:
+            return jsonify({'erro': 'Agendamento não encontrado'}), 404
+        
+        montador = Montador.query.get(data['montador_id'])
+        if not montador:
+            return jsonify({'erro': 'Montador não encontrado'}), 404
+        
+        # Verificar se montador está disponível
+        if not montador.estaDisponivel():
+            return jsonify({'erro': 'Montador não está disponível'}), 400
+        
+        # Atribuir montador
+        agendamento.montador_id = data['montador_id']
+        agendamento.status = 'Agendado'
+        
+        db.session.commit()
+        
+        return jsonify({
+            'mensagem': 'Montador atribuído com sucesso',
+            'agendamento_id': agendamento.id,
+            'montador_id': montador.id,
+            'montador_nome': montador.nome
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'erro': str(e)}), 500
+
+@app.route('/admin/auth', methods=['POST'])
+def auth_admin():
+    """Autenticação administrativa (hardcoded conforme especificado)"""
+    data = request.json
+    
+    if not data or 'email' not in data or 'senha' not in data:
+        return jsonify({'erro': 'Email e senha são obrigatórios'}), 400
+    
+    # Credenciais hardcoded conforme especificado
+    if data['email'] == 'adm@gmail.com' and data['senha'] == 'admin':
+        return jsonify({
+            'id': 1,
+            'nome': 'Administrador',
+            'email': 'adm@gmail.com',
+            'tipo': 'administrador'
+        })
+    else:
+        return jsonify({'erro': 'Credenciais inválidas'}), 401
+
+# -----------------------------
+# Servir arquivos estáticos da área administrativa
+# -----------------------------
+@app.route('/admin/static/<path:filename>')
+def admin_static(filename):
+    """Servir arquivos estáticos da área administrativa"""
+    from flask import send_from_directory
+    return send_from_directory('admin/static', filename)
+
+# -----------------------------
 # Execução
 # -----------------------------
 

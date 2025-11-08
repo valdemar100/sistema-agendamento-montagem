@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área Administrativa - Login</title>
+    <link rel="stylesheet" href="/admin/static/admin-styles.css">
+</head>
+<body>
+    <div class="admin-login-container">
+        <div class="admin-login-box">
+            <div class="admin-header">
+                <h1>🔐 Área Administrativa</h1>
+                <p>Sistema de Agendamento de Montagem de Móveis</p>
+                <div class="admin-warning">
+                    ⚠️ Acesso restrito - Apenas administradores
+                </div>
+            </div>
+
+            <form id="admin-login-form" class="admin-form">
+                <div class="form-group">
+                    <label for="admin-email">📧 Email do Administrador:</label>
+                    <input type="email" id="admin-email" value="adm@gmail.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-senha">🔑 Senha:</label>
+                    <input type="password" id="admin-senha" value="admin" required>
+                </div>
+
+                <button type="submit" class="btn btn-admin">
+                    🚪 Acessar Painel Administrativo
+                </button>
+            </form>
+
+            <div id="admin-login-result" class="result-box"></div>
+
+            <div class="admin-info">
+                <h3>📋 Funcionalidades Administrativas:</h3>
+                <ul>
+                    <li>📊 Gerar relatórios de agendamentos</li>
+                    <li>👥 Gerenciar usuários (clientes e montadores)</li>
+                    <li>🔧 Atribuir montadores aos agendamentos</li>
+                    <li>📈 Visualizar todos os dados do sistema</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="/admin/static/admin-auth.js"></script>
+</body>
+</html>

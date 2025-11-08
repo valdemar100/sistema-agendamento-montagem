@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="/admin/static/admin-styles.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header Administrativo -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <h1>🔧 Painel Administrativo</h1>
+                <div class="admin-user-info">
+                    <span id="admin-user-name">Administrador</span>
+                    <button onclick="logout()" class="btn btn-logout">🚪 Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navegação Administrativa -->
+        <nav class="admin-nav">
+            <button class="admin-tab active" data-tab="relatorios">📊 Relatórios</button>
+            <button class="admin-tab" data-tab="usuarios">👥 Gerenciar Usuários</button>
+            <button class="admin-tab" data-tab="atribuicoes">🔧 Atribuir Montadores</button>
+        </nav>
+
+        <!-- Conteúdo das Abas -->
+        <main class="admin-main">
+            <!-- Aba Relatórios -->
+            <section id="admin-tab-relatorios" class="admin-tab-content active">
+                <h2>📊 Relatórios do Sistema</h2>
+                
+                <div class="admin-stats-grid">
+                    <div class="admin-stat-card">
+                        <h3>📅 Agendamentos</h3>
+                        <div class="stat-number" id="total-agendamentos">0</div>
+                        <div class="stat-label">Total de Agendamentos</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <h3>👥 Clientes</h3>
+                        <div class="stat-number" id="total-clientes">0</div>
+                        <div class="stat-label">Clientes Cadastrados</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <h3>🔨 Montadores</h3>
+                        <div class="stat-number" id="total-montadores">0</div>
+                        <div class="stat-label">Montadores Ativos</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <h3>✅ Concluídas</h3>
+                        <div class="stat-number" id="total-concluidas">0</div>
+                        <div class="stat-label">Montagens Finalizadas</div>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <h3>📋 Todos os Agendamentos</h3>
+                    <button onclick="carregarRelatorios()" class="btn btn-admin">🔄 Atualizar Relatórios</button>
+                    <div id="relatorios-lista" class="admin-list"></div>
+                </div>
+            </section>
+
+            <!-- Aba Gerenciar Usuários -->
+            <section id="admin-tab-usuarios" class="admin-tab-content">
+                <h2>👥 Gerenciar Usuários</h2>
+                
+                <div class="admin-section">
+                    <h3>👤 Clientes Cadastrados</h3>
+                    <button onclick="carregarClientes()" class="btn btn-admin">🔄 Atualizar Lista</button>
+                    <div id="clientes-lista" class="admin-list"></div>
+                </div>
+
+                <div class="admin-section">
+                    <h3>🔨 Montadores Cadastrados</h3>
+                    <button onclick="carregarMontadores()" class="btn btn-admin">🔄 Atualizar Lista</button>
+                    <div id="montadores-lista" class="admin-list"></div>
+                </div>
+            </section>
+
+            <!-- Aba Atribuir Montadores -->
+            <section id="admin-tab-atribuicoes" class="admin-tab-content">
+                <h2>🔧 Atribuir Montadores aos Agendamentos</h2>
+                
+                <div class="admin-section">
+                    <h3>📋 Agendamentos Pendentes</h3>
+                    <button onclick="carregarAgendamentosPendentes()" class="btn btn-admin">🔄 Atualizar Lista</button>
+                    <div id="agendamentos-pendentes" class="admin-list"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/admin/static/admin-app.js"></script>
+</body>
+</html>
