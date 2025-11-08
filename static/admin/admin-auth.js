@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
 async function adminLogin(event) {
     event.preventDefault();
     
-    const email = document.getElementById('email').value;
-    const senha = document.getElementById('senha').value;
+    const email = document.getElementById('admin-email').value;
+    const senha = document.getElementById('admin-senha').value;
     
     // Fazer requisição para o backend
     try {
