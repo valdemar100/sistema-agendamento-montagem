@@ -1048,15 +1048,6 @@ def auth_admin():
         return jsonify({'erro': 'Credenciais inválidas'}), 401
 
 # -----------------------------
-# Servir arquivos estáticos da área administrativa
-# -----------------------------
-@app.route('/admin/static/<path:filename>')
-def admin_static(filename):
-    """Servir arquivos estáticos da área administrativa"""
-    from flask import send_from_directory
-    return send_from_directory('admin/static', filename)
-
-# -----------------------------
 # Execução
 # -----------------------------
 
