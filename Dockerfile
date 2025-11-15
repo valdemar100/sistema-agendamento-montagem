@@ -25,4 +25,4 @@ ENV PORT=8080
 ENV FLASK_ENV=production
 
 # Usar Gunicorn para produção (mais estável que python direto)
-CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 main:app
+CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 --access-logfile - --error-logfile - --log-level info --preload main:app

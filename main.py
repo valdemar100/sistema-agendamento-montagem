@@ -198,13 +198,18 @@ with app.app_context():
         print("✅ Banco de dados inicializado com sucesso!")
     except Exception as e:
         print(f"⚠️ Aviso ao criar tabelas: {e}")
+        # Não falhar a aplicação, apenas logar o erro
 
 
 # ==================== ROTAS DE FRONT-END ====================
 @app.route('/')
 def login_page():
     """Página de Login/Cadastro"""
-    return render_template('login.html')
+    try:
+        return render_template('login.html')
+    except Exception as e:
+        print(f"Erro ao renderizar login.html: {e}")
+        return f"Erro ao carregar página: {e}", 500
 
 @app.route('/sistema')
 def sistema():
@@ -940,12 +945,20 @@ def reset_database():
 @app.route('/admin/')
 def admin_index():
     """Página principal da área administrativa"""
-    return render_template('admin/index.html')
+    try:
+        return render_template('admin/index.html')
+    except Exception as e:
+        print(f"Erro ao renderizar admin/index.html: {e}")
+        return f"Erro ao carregar página administrativa: {e}", 500
 
 @app.route('/admin/login')
 def admin_login():
     """Página de login da área administrativa"""
-    return render_template('admin/login.html')
+    try:
+        return render_template('admin/login.html')
+    except Exception as e:
+        print(f"Erro ao renderizar admin/login.html: {e}")
+        return f"Erro ao carregar login administrativo: {e}", 500
 
 @app.route('/montadores', methods=['GET'])
 def listar_montadores():
