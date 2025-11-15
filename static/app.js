@@ -105,9 +105,16 @@ function controlarVisibilidadeAbas() {
         }
         
         // Verificar status de disponibilidade automaticamente para montadores
+        // Aumentar delay para garantir que os elementos HTML estejam renderizados
         setTimeout(() => {
-            verificarStatusDisponibilidade();
-        }, 1000);
+            const statusAtual = document.getElementById('status-atual');
+            if (statusAtual) {
+                console.log('Elemento encontrado, carregando status...');
+                verificarStatusDisponibilidade();
+            } else {
+                console.error('Elemento status-atual não encontrado');
+            }
+        }, 2000);
     } else if (currentUser && currentUser.tipo === 'cliente') {
         // Para clientes: esconder aba montador
         if (montadorBtn) montadorBtn.style.display = 'none';
@@ -489,8 +496,12 @@ async function verificarStatusDisponibilidade() {
     if (!currentUser || currentUser.tipo !== 'montador') {
         return;
     }
+    
+    // Mostrar status de carregamento imediatamente
+    atualizarDisplayStatus(null, 'Carregando...');
 
     try {
+        console.log('Buscando status do montador:', currentUser.id);
         const response = await fetch(`${API_URL}/montadores/${currentUser.id}`);
         
         if (!response.ok) {
@@ -498,14 +509,15 @@ async function verificarStatusDisponibilidade() {
         }
         
         const data = await response.json();
+        console.log('Dados recebidos:', data);
         
         const disponivel = data.disponivel;
-        atualizarDisplayStatus(disponivel, data.ultima_atualizacao || 'Não informado');
+        atualizarDisplayStatus(disponivel, data.ultima_atualizacao || new Date().toLocaleString('pt-BR'));
         
     } catch (error) {
         console.error('Erro ao verificar status:', error);
-        atualizarDisplayStatus(null, 'Erro ao carregar');
-        showResult('montador-result', '⚠️ Não foi possível carregar o status. Tente atualizar manualmente.', false);
+        atualizarDisplayStatus(false, 'Erro ao carregar - Clique em Atualizar Status');
+        showResult('montador-result', '⚠️ Não foi possível carregar o status. Tente clicar em "Atualizar Status".', false);
     }
 }
 
