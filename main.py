@@ -865,26 +865,41 @@ def cadastrar_montador():
 @app.route('/montadores/<int:montador_id>', methods=['GET'])
 def obter_montador(montador_id):
     """Obter dados do montador incluindo status de disponibilidade"""
-    montador = Montador.query.get_or_404(montador_id)
-    
-    # Verificar agendamentos ativos
-    agendamentos_ativos = Agendamento.query.filter(
-        Agendamento.montador_id == montador.id,
-        Agendamento.status.in_(['Pendente', 'Confirmado pelo Montador', 'Agendado'])
-    ).count()
-    
-    # Determinar disponibilidade baseado nos agendamentos
-    disponivel = montador.estaDisponivel()
-    
-    return jsonify({
-        'id': montador.id,
-        'nome': montador.nome,
-        'regiao': montador.regiao,
-        'especialidade': montador.especialidade,
-        'disponivel': disponivel,
-        'agendamentos_ativos': agendamentos_ativos,
-        'ultima_atualizacao': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-    })
+    try:
+        print(f"[DEBUG] Buscando montador ID: {montador_id}")
+        montador = Montador.query.get_or_404(montador_id)
+        
+        print(f"[DEBUG] Montador encontrado: {montador.nome}")
+        
+        # Verificar agendamentos ativos
+        agendamentos_ativos = Agendamento.query.filter(
+            Agendamento.montador_id == montador.id,
+            Agendamento.status.in_(['Pendente', 'Confirmado pelo Montador', 'Agendado'])
+        ).count()
+        
+        print(f"[DEBUG] Agendamentos ativos: {agendamentos_ativos}")
+        
+        # Determinar disponibilidade baseado nos agendamentos
+        disponivel = montador.estaDisponivel()
+        
+        print(f"[DEBUG] Disponível: {disponivel}")
+        
+        resultado = {
+            'id': montador.id,
+            'nome': montador.nome,
+            'regiao': montador.regiao,
+            'especialidade': montador.especialidade,
+            'disponivel': disponivel,
+            'agendamentos_ativos': agendamentos_ativos,
+            'ultima_atualizacao': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+        }
+        
+        print(f"[DEBUG] Retornando: {resultado}")
+        
+        return jsonify(resultado)
+    except Exception as e:
+        print(f"[ERRO] Erro ao obter montador: {str(e)}")
+        return jsonify({'erro': str(e)}), 500
 
 
 @app.route('/montadores/login', methods=['POST'])

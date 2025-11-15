@@ -494,6 +494,7 @@ async function confirmarDisponibilidade(disponivel) {
 // Verificar Status Atual de Disponibilidade
 async function verificarStatusDisponibilidade() {
     if (!currentUser || currentUser.tipo !== 'montador') {
+        console.log('[DEBUG] Não é montador ou não está logado');
         return;
     }
     
@@ -501,23 +502,39 @@ async function verificarStatusDisponibilidade() {
     atualizarDisplayStatus(null, 'Carregando...');
 
     try {
-        console.log('Buscando status do montador:', currentUser.id);
-        const response = await fetch(`${API_URL}/montadores/${currentUser.id}`);
+        console.log('[DEBUG] Usuario atual:', currentUser);
+        console.log('[DEBUG] API_URL:', API_URL);
+        console.log('[DEBUG] Buscando status do montador ID:', currentUser.id);
+        
+        const url = `${API_URL}/montadores/${currentUser.id}`;
+        console.log('[DEBUG] URL completa:', url);
+        
+        const response = await fetch(url);
+        
+        console.log('[DEBUG] Response status:', response.status);
+        console.log('[DEBUG] Response ok:', response.ok);
         
         if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
+            const errorText = await response.text();
+            console.error('[DEBUG] Response error text:', errorText);
+            throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
         }
         
         const data = await response.json();
-        console.log('Dados recebidos:', data);
+        console.log('[DEBUG] Dados recebidos:', data);
         
         const disponivel = data.disponivel;
+        console.log('[DEBUG] Status disponivel:', disponivel);
+        
         atualizarDisplayStatus(disponivel, data.ultima_atualizacao || new Date().toLocaleString('pt-BR'));
         
     } catch (error) {
-        console.error('Erro ao verificar status:', error);
+        console.error('[ERRO] Erro ao verificar status:', error);
+        console.error('[ERRO] Error name:', error.name);
+        console.error('[ERRO] Error message:', error.message);
+        console.error('[ERRO] Error stack:', error.stack);
         atualizarDisplayStatus(false, 'Erro ao carregar - Clique em Atualizar Status');
-        showResult('montador-result', '⚠️ Não foi possível carregar o status. Tente clicar em "Atualizar Status".', false);
+        showResult('montador-result', `⚠️ Erro: ${error.message}`, false);
     }
 }
 
