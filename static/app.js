@@ -492,18 +492,20 @@ async function verificarStatusDisponibilidade() {
 
     try {
         const response = await fetch(`${API_URL}/montadores/${currentUser.id}`);
+        
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        
         const data = await response.json();
         
-        if (response.ok) {
-            const disponivel = data.disponivel;
-            atualizarDisplayStatus(disponivel, data.ultima_atualizacao || 'Não informado');
-            showResult('montador-result', '🔄 Status atualizado!', true);
-        } else {
-            showResult('montador-result', '❌ Erro ao verificar status', false);
-        }
+        const disponivel = data.disponivel;
+        atualizarDisplayStatus(disponivel, data.ultima_atualizacao || 'Não informado');
+        
     } catch (error) {
         console.error('Erro ao verificar status:', error);
         atualizarDisplayStatus(null, 'Erro ao carregar');
+        showResult('montador-result', '⚠️ Não foi possível carregar o status. Tente atualizar manualmente.', false);
     }
 }
 
@@ -525,13 +527,13 @@ function atualizarDisplayStatus(disponivel, ultimaAtualizacao) {
             statusContainer.style.borderLeftColor = '#dc3545';
             statusContainer.style.backgroundColor = '#f8d7da';
         } else {
-            statusAtual.textContent = '❓ Status não definido';
+            statusAtual.textContent = '⏳ Carregando...';
             statusAtual.style.color = '#6c757d';
             statusContainer.style.borderLeftColor = '#6c757d';
             statusContainer.style.backgroundColor = '#f8f9fa';
         }
         
-        ultimaAtualizacaoEl.textContent = ultimaAtualizacao;
+        ultimaAtualizacaoEl.textContent = ultimaAtualizacao || 'Atualizando...';
     }
 }
 
