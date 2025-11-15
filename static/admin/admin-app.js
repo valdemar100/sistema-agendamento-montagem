@@ -1,7 +1,8 @@
 // Configuração da API
+// Usa a mesma origem do site para evitar problemas de CORS
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
     ? 'http://localhost:5000' 
-    : 'https://web-production-6b5a8.up.railway.app';
+    : window.location.origin;
 
 let currentAdmin = null;
 

@@ -232,6 +232,11 @@ def health_check():
     """Health check endpoint para Railway"""
     return jsonify({'status': 'healthy', 'service': 'agendamento-montagem'}), 200
 
+@app.route('/favicon.ico')
+def favicon():
+    """Favicon placeholder para evitar erro 404"""
+    return '', 204  # No Content
+
 
 # -----------------------------
 # Rotas (SOMENTE o que aparece nos diagramas de casos de uso)
