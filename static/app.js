@@ -1,8 +1,9 @@
 // Configuração da API
-// Configuração da API
+// Se estiver em produção (Railway), usa a mesma origem do site
+// Se estiver em desenvolvimento local, usa localhost:5000
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000'
-    : 'https://web-production-6b5a8.up.railway.app';
+    : window.location.origin; // Usa a mesma URL do site (sem CORS!)
 
 // Estado global da aplicação
 let currentUser = null;

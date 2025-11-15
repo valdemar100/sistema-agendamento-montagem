@@ -30,15 +30,12 @@ def allowed_file(filename):
 
 db = SQLAlchemy(app)
 
-# Configurar CORS para permitir requisições do Railway e localhost
+# Configurar CORS para permitir requisições
+# Em produção, frontend e backend estão no mesmo domínio (sem CORS)
+# Mas configuramos para aceitar também localhost em dev
 CORS(app, resources={
     r"/*": {
-        "origins": [
-            "http://localhost:5000",
-            "http://127.0.0.1:5000",
-            "https://web-production-715ba.up.railway.app",
-            "https://web-production-6b5a8.up.railway.app"
-        ],
+        "origins": "*",  # Aceita todas as origens
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True
