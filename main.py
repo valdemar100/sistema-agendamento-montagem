@@ -29,7 +29,21 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 db = SQLAlchemy(app)
-CORS(app)  # Permite requisições do front-end
+
+# Configurar CORS para permitir requisições do Railway e localhost
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "http://localhost:5000",
+            "http://127.0.0.1:5000",
+            "https://web-production-715ba.up.railway.app",
+            "https://web-production-6b5a8.up.railway.app"
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
 
 # -----------------------------
 # Modelos (baseado EXATAMENTE no diagrama de classes)
