@@ -22,6 +22,7 @@ EXPOSE 8080
 
 # Variável de ambiente padrão
 ENV PORT=8080
+ENV FLASK_ENV=production
 
-# Comando simples para inicialização
-CMD ["python", "main.py"]
+# Usar Gunicorn para produção (mais estável que python direto)
+CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 main:app

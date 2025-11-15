@@ -12,14 +12,16 @@ import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+
+# Criar diretórios necessários
+os.makedirs('instance', exist_ok=True)
+os.makedirs('static/uploads', exist_ok=True)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///agendamento.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-
-# Criar pasta de uploads se não existir
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 def allowed_file(filename):
     """Verifica se a extensão do arquivo é permitida"""
@@ -191,7 +193,11 @@ class ServicoContratado(db.Model):
 
 # Cria as tabelas
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+        print("✅ Banco de dados inicializado com sucesso!")
+    except Exception as e:
+        print(f"⚠️ Aviso ao criar tabelas: {e}")
 
 
 # ==================== ROTAS DE FRONT-END ====================
